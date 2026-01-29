@@ -1,0 +1,12 @@
+streamlit
+pandas
+plotly
+python-dotenv
+langchain-groq
+langchain-core
+openpyxl
+langchain-openai
+langchain-ollama
+fastapi
+uvicorn
+jinja2

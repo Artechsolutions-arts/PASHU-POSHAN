@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forage | Enterprise Fodder Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+
+        .govt-navy {
+            background-color: #0F172A;
+        }
+
+        .text-govt-navy {
+            color: #0F172A;
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 50;
+        }
+
+        .main-content {
+            margin-left: 280px;
+        }
+
+        .kpi-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-left-width: 4px;
+            padding: 1.25rem;
+        }
+
+        .nav-active {
+            background-color: #1e293b;
+            color: white !important;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-surplus {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+
+        .status-deficit {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar govt-navy text-white p-6">
+        <div class="mb-10 text-center border-b border-slate-700 pb-6">
+            <h1 class="text-2xl font-black tracking-tight">FORAGE</h1>
+            <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-[0.2em]">Institutional Analytics</p>
+        </div>
+        <nav class="space-y-2" id="sidebar-nav">
+            <button onclick="switchView('overview')" data-view="overview"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition nav-active">
+                <span class="mr-3">📊</span> Executive Overview
+            </button>
+            <button onclick="switchView('supply')" data-view="supply"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
+                <span class="mr-3">🌾</span> Supply Profile
+            </button>
+            <button onclick="switchView('demand')" data-view="demand"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
+                <span class="mr-3">🐄</span> Demand Dynamics
+            </button>
+            <button onclick="switchView('risk')" data-view="risk"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
+                <span class="mr-3">⚠️</span> Risk & Vulnerability
+            </button>
+            <button onclick="switchView('ai')" data-view="ai"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
+                <span class="mr-3">🤖</span> Pashu Sahayak AI
+            </button>
+        </nav>
+        <div class="absolute bottom-10 left-6 text-[10px] text-slate-500 font-mono">
+            <p>BUILD: 2026.01.28-V9</p>
+            <p>© DEPT. OF ANIMAL HUSBANDRY</p>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content min-h-screen">
+        <header
+            class="bg-white border-b border-slate-200 px-10 py-5 flex justify-between items-center sticky top-0 z-40">
+            <div>
+                <h2 class="text-govt-navy text-lg font-bold" id="view-title">Executive Overview</h2>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Live System Sync</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Region Selector:</label>
+                <select id="district-filter" onchange="handleFilterChange()"
+                    class="bg-slate-100 text-xs font-bold rounded-md px-4 py-2 outline-none border-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all">ANDHRA PRADESH (STATE)</option>
+                </select>
+                <button
+                    class="bg-govt-navy text-white text-[10px] font-bold px-4 py-2 rounded-md hover:bg-slate-800 transition">EXPORT
+                    DATA</button>
+            </div>
+        </header>
+
+        <main class="p-10">
+            <!-- Global KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                <div class="kpi-card border-l-blue-600 shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Gross Fodder Supply
+                    </p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-black text-govt-navy" id="kpi-supply">--</h3><span
+                            class="ml-1 text-[10px] font-bold text-slate-400">Tons</span>
+                    </div>
+                </div>
+                <div class="kpi-card border-l-slate-400 shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Dry Matter
+                        Demand</p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-black text-govt-navy" id="kpi-demand">--</h3><span
+                            class="ml-1 text-[10px] font-bold text-slate-400">Tons</span>
+                    </div>
+                </div>
+                <div class="kpi-card border-l-rose-500 shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Consolidated Net Gap
+                    </p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-black text-rose-700" id="kpi-gap">--</h3><span
+                            class="ml-1 text-[10px] font-bold text-rose-400">Tons</span>
+                    </div>
+                </div>
+                <div class="kpi-card border-l-emerald-500 shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Sufficiency Index</p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-black text-emerald-700" id="kpi-percent">--%</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Sections -->
+            <div id="view-overview" class="view-section">
+                <div class="bg-white p-6 border border-slate-200 rounded-xl shadow-sm mb-10">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="text-sm font-bold text-govt-navy uppercase tracking-wider">District-wise Supply vs
+                            Demand Comparison</h4>
+                        <div class="flex space-x-4 text-[10px] font-bold">
+                            <span class="flex items-center"><span class="w-3 h-3 bg-blue-500 mr-1 rounded-sm"></span>
+                                SUPPLY</span>
+                            <span class="flex items-center"><span class="w-3 h-3 bg-slate-300 mr-1 rounded-sm"></span>
+                                DEMAND</span>
+                        </div>
+                    </div>
+                    <canvas id="ov-chart" height="350"></canvas>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
+                                <tr>
+                                    <th class="px-6 py-4">District</th>
+                                    <th class="px-6 py-4 text-right">Supply (T)</th>
+                                    <th class="px-6 py-4 text-right">Demand (T)</th>
+                                    <th class="px-6 py-4 text-right">Balance (T)</th>
+                                    <th class="px-6 py-4 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ov-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
+                        </table>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="text-xs font-bold text-govt-navy uppercase mb-4">State Distribution</h4>
+                        <canvas id="ov-pie" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-supply" class="view-section hidden">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
+                    <h4 class="text-sm font-bold text-govt-navy uppercase mb-4">Hierarchical Crop Distribution
+                        (Sunburst)</h4>
+                    <div id="sp-sunburst" class="w-full h-[400px]"></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+                    <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="text-sm font-bold text-govt-navy uppercase mb-6">Biomass Composition by Crop Type
+                        </h4>
+                        <canvas id="sp-pie" height="300"></canvas>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="text-sm font-bold text-govt-navy uppercase mb-6">Supply Intensity (Top Regions)</h4>
+                        <canvas id="sp-bar" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-demand" class="view-section hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+                    <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="text-sm font-bold text-govt-navy uppercase mb-6">Consumption by Livestock Category
+                        </h4>
+                        <canvas id="dm-pie" height="300"></canvas>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="text-sm font-bold text-govt-navy uppercase mb-6">Mandal-wise Demand Register (Sample)
+                        </h4>
+                        <div id="dm-list" class="space-y-2 h-72 overflow-y-auto custom-scrollbar pr-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-risk" class="view-section hidden">
+                <div class="bg-rose-50 border border-rose-200 p-6 rounded-xl mb-10">
+                    <h4 class="text-rose-900 font-bold text-sm uppercase mb-1">Administrative Priority Alert</h4>
+                    <p class="text-rose-700 text-[11px]">The following districts report a critical resource gap (index <
+                            85%). Immediate logistical support is recommended.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="risk-grid"></div>
+            </div>
+
+            <div id="view-ai" class="view-section hidden">
+                <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                    <div class="govt-navy p-6 text-white flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold">Pashu Sahayak Assistant</h3>
+                            <p class="text-[10px] text-slate-400 font-mono tracking-tighter">SECURE KNOWLEDGE RETRIEVAL
+                                SERVICE</p>
+                        </div>
+                        <div class="text-[10px] bg-blue-600 px-3 py-1 rounded font-bold">READY</div>
+                    </div>
+                    <div id="chat-box"
+                        class="h-96 overflow-y-auto p-8 bg-slate-50 space-y-4 text-xs font-medium custom-scrollbar">
+                        <div class="flex">
+                            <div
+                                class="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm max-w-[85%]">
+                                Welcome. I have indexed the 2024 Fodder Dynamics Database. You may query
+                                district-specific biomass trends or state-wide deficit projections.</div>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-white border-t border-slate-100 flex space-x-3">
+                        <input id="chat-input" type="text"
+                            placeholder="e.g. 'Show me the crop breakdown for Nellore district'"
+                            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-xs outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold">
+                        <button onclick="askAI()"
+                            class="bg-govt-navy text-white px-6 rounded-lg text-xs font-bold shadow-md hover:bg-slate-800 transition-all">QUERY</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- DATA STATE ---
+        let raw = null;
+        let activeView = 'overview';
+        let charts = {};
+        let currentRegion = 'all';
+
+        const formatter = new Intl.NumberFormat('en-IN');
+        const formatTons = (n) => {
+            const val = Math.round(n);
+            if (val > 1000000) return (val / 1000000).toFixed(2) + 'M';
+            if (val > 1000) return (val / 1000).toFixed(1) + 'K';
+            return formatter.format(val);
+        };
+
+        // --- CORE ENGINE ---
+        async function load() {
+            try {
+                const res = await fetch('/api/data');
+                raw = await res.json();
+
+                // Populate region list
+                const sel = document.getElementById('district-filter');
+                [...new Set(raw.gap.map(d => d.District))].sort().forEach(d => {
+                    const o = document.createElement('option');
+                    o.value = d; o.innerText = d;
+                    sel.appendChild(o);
+                });
+
+                render();
+            } catch (e) { document.body.innerHTML = "<div class='p-20 text-center font-bold text-red-600'>CRITICAL: Data Bridge Failure. Check API connectivity.</div>"; }
+        }
+
+        function handleFilterChange() {
+            currentRegion = document.getElementById('district-filter').value;
+            render();
+        }
+
+        function switchView(vid) {
+            activeView = vid;
+            document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('view-' + vid).classList.remove('hidden');
+
+            document.querySelectorAll('#sidebar-nav button').forEach(b => {
+                if (b.dataset.view === vid) b.classList.add('nav-active');
+                else b.classList.remove('nav-active');
+            });
+
+            const map = { 'overview': 'Executive Overview', 'supply': 'Supply Profile', 'demand': 'Demand Dynamics', 'risk': 'Risk & Vulnerability', 'ai': 'Pashu Sahayak Assistant' };
+            document.getElementById('view-title').innerText = map[vid];
+            render();
+        }
+
+        function render() {
+            if (!raw) return;
+
+            // 1. Calculate Filtered KPIs
+            let data = currentRegion === 'all' ? raw.gap : raw.gap.filter(d => d.District === currentRegion);
+            const ts = data.reduce((acc, obj) => acc + Number(obj.Total_Fodder_Tons), 0);
+            const td = data.reduce((acc, obj) => acc + Number(obj.Total_Demand_Tons), 0);
+            const balance = ts - td;
+            const ratio = (ts / td * 100).toFixed(1);
+
+            document.getElementById('kpi-supply').innerText = formatTons(ts);
+            document.getElementById('kpi-demand').innerText = formatTons(td);
+            document.getElementById('kpi-gap').innerText = formatTons(balance);
+            document.getElementById('kpi-percent').innerText = ratio;
+            document.getElementById('kpi-gap').className = balance < 0 ? 'text-rose-700' : 'text-emerald-700';
+
+            // Clean charts
+            Object.values(charts).forEach(c => c && c.destroy());
+            charts = {};
+
+            // 2. Route to View Renderers
+            if (activeView === 'overview') renderOverview(data);
+            else if (activeView === 'supply') renderSupply();
+            else if (activeView === 'demand') renderDemand();
+            else if (activeView === 'risk') renderRisk();
+        }
+
+        // --- VIEW RENDERERS ---
+        function renderOverview(data) {
+            // Table
+            const tb = document.getElementById('ov-table-body');
+            tb.innerHTML = '';
+            data.sort((a, b) => a.Balance_Tons - b.Balance_Tons).forEach(r => {
+                tb.innerHTML += `<tr>
+                    <td class="px-6 py-4 font-bold text-govt-navy uppercase">${r.District}</td>
+                    <td class="px-6 py-4 text-right">${formatTons(r.Total_Fodder_Tons)}</td>
+                    <td class="px-6 py-4 text-right">${formatTons(r.Total_Demand_Tons)}</td>
+                    <td class="px-6 py-4 text-right font-black ${r.Balance_Tons < 0 ? 'text-rose-600' : 'text-emerald-700'}">${formatTons(r.Balance_Tons)}</td>
+                    <td class="px-6 py-4 text-center"><span class="status-pill status-${r.Status.toLowerCase()}">${r.Status}</span></td>
+                </tr>`;
+            });
+
+            // Chart
+            const ctx = document.getElementById('ov-chart').getContext('2d');
+            charts.ov = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.District),
+                    datasets: [
+                        { label: 'Supply', data: data.map(d => d.Total_Fodder_Tons), backgroundColor: '#3b82f6', borderRadius: 4 },
+                        { label: 'Demand', data: data.map(d => d.Total_Demand_Tons), backgroundColor: '#cbd5e1', borderRadius: 4 }
+                    ]
+                },
+                options: { responsive: true, scales: { x: { grid: { display: false } }, y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+            });
+
+            // Pie
+            const pctx = document.getElementById('ov-pie').getContext('2d');
+            charts.ovpie = new Chart(pctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Surplus Districts', 'Deficit Districts'],
+                    datasets: [{
+                        data: [raw.gap.filter(d => d.Status === 'SURPLUS').length, raw.gap.filter(d => d.Status === 'DEFICIT').length],
+                        backgroundColor: ['#10B981', '#EF4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '80%', plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function renderSupply() {
+            let data = currentRegion === 'all' ? raw.supply : raw.supply.filter(d => d.District === currentRegion);
+
+            // Sum all crops
+            const crops = ['Paddy', 'Maize', 'Groundnut', 'Sugarcane', 'Jowar', 'Bajra', 'Ragi', 'Cotton', 'Pulses'];
+            const totals = crops.map(c => data.reduce((acc, row) => acc + (row[c] || 0), 0));
+
+            const pctx = document.getElementById('sp-pie').getContext('2d');
+            charts.spPie = new Chart(pctx, {
+                type: 'pie',
+                data: { labels: crops, datasets: [{ data: totals, backgroundColor: ['#0F172A', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#64748B', '#94A3B8'] }] },
+                options: { plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            });
+
+            const bctx = document.getElementById('sp-bar').getContext('2d');
+            const topDistricts = raw.supply.sort((a, b) => b.Total_Fodder_Tons - a.Total_Fodder_Tons).slice(0, 10);
+            charts.spBar = new Chart(bctx, {
+                type: 'bar',
+                data: { labels: topDistricts.map(d => d.District), datasets: [{ data: topDistricts.map(d => d.Total_Fodder_Tons), backgroundColor: '#0ea5e9', borderRadius: 6 }] },
+                options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+            });
+
+            // Sunburst
+            const hierarchy = {
+                'Cereals Group': ['Paddy', 'Maize', 'Jowar', 'Bajra', 'Ragi'],
+                'Commercial Crops': ['Sugarcane', 'Cotton'],
+                'Oilseeds': ['Groundnut'],
+                'Pulses & Others': ['Pulses']
+            };
+
+            // Distinct Color Palette
+            const colorMap = {
+                // Categories (Darker/Neutral)
+                'Cereals Group': '#334155', // Slate
+                'Commercial Crops': '#475569',
+                'Oilseeds': '#64748B',
+                'Pulses & Others': '#94A3B8',
+
+                // Crops (Vibrant)
+                'Paddy': '#FFD700',       // Gold
+                'Maize': '#EA580C',       // Orange
+                'Jowar': '#84CC16',       // Lime
+                'Bajra': '#D946EF',       // Fuchsia
+                'Ragi': '#8B5CF6',        // Violet
+                'Sugarcane': '#16A34A',   // Green
+                'Cotton': '#E2E8F0',      // Light Slate
+                'Groundnut': '#D97706',   // Amber
+                'Pulses': '#EC4899'       // Pink
+            };
+
+            let labels = [];
+            let parents = [];
+            let values = [];
+            let colors = [];
+
+            Object.entries(hierarchy).forEach(([cat, cropList]) => {
+                let catTotal = 0;
+                cropList.forEach(crop => {
+                    const val = data.reduce((acc, row) => acc + (row[crop] || 0), 0);
+                    if (val > 0) {
+                        labels.push(crop);
+                        parents.push(cat);
+                        values.push(val);
+                        colors.push(colorMap[crop] || '#CBD5E1'); // Fallback color
+                        catTotal += val;
+                    }
+                });
+                if (catTotal > 0) {
+                    labels.push(cat);
+                    parents.push('');
+                    values.push(catTotal);
+                    colors.push(colorMap[cat] || '#1E293B');
+                }
+            });
+
+            const sunData = [{
+                type: "sunburst",
+                labels: labels,
+                parents: parents,
+                values: values,
+                branchvalues: 'total',
+                textinfo: "label+percent root",
+                texttemplate: "%{label}<br>%{percentRoot:.1%}",
+                insidetextorientation: 'radial',
+                insidetextfont: { size: 10, color: '#ffffff', weight: 'bold', family: 'Inter', shadow: '0px 0px 2px #000' },
+                outsidetextfont: { size: 11, color: '#334155' },
+                marker: {
+                    line: { width: 2, color: 'white' },
+                    colors: colors
+                },
+                leaf: { opacity: 1 },
+                hovertemplate: '<b>%{label}</b><br>Supply: %{value:,.0f} Tons<br>Share: %{percentRoot:.1%}<extra></extra>'
+            }];
+
+            const sunLayout = {
+                margin: { l: 0, r: 0, b: 0, t: 0 },
+            };
+
+            Plotly.newPlot('sp-sunburst', sunData, sunLayout, { displayModeBar: false });
+        }
+
+        function renderDemand() {
+            let data = currentRegion === 'all' ? raw.demand : raw.demand.filter(d => d.District === currentRegion);
+
+            // Animal Breakdown
+            const cats = ['Cattle_Demand', 'Buffaloes_Demand', 'Sheep_Demand', 'Goat_Demand'];
+            const labels = ['Cattle', 'Buffaloes', 'Sheep', 'Goats'];
+            const totals = cats.map(c => data.reduce((acc, row) => acc + (row[c] || 0), 0));
+
+            const pctx = document.getElementById('dm-pie').getContext('2d');
+            charts.dmPie = new Chart(pctx, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: totals, backgroundColor: ['#0F172A', '#3B82F6', '#94A3B8', '#E2E8F0'] }] },
+                options: { cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+            });
+
+            const list = document.getElementById('dm-list');
+            list.innerHTML = '';
+            let mandals = currentRegion === 'all' ? raw.mandal : raw.mandal.filter(m => m.District === currentRegion);
+            mandals.slice(0, 50).forEach(m => {
+                list.innerHTML += `<div class="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                    <span class="font-bold text-govt-navy uppercase">${m.Mandal} <span class="text-slate-400 font-normal">(${m.District})</span></span>
+                    <span class="font-mono text-slate-500 font-black">${formatTons(m.Total_Demand_Tons)} T</span>
+                </div>`;
+            });
+        }
+
+        function renderRisk() {
+            const grid = document.getElementById('risk-grid');
+            grid.innerHTML = '';
+            raw.gap.filter(d => d.Status === 'DEFICIT').sort((a, b) => a.Balance_Tons - b.Balance_Tons).forEach(d => {
+                const sIdx = (d.Total_Fodder_Tons / d.Total_Demand_Tons * 100).toFixed(0);
+                grid.innerHTML += `<div class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm border-l-8 border-l-rose-600">
+                    <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest mb-1">${d.District}</p>
+                    <h5 class="text-2xl font-black text-rose-800">${formatTons(Math.abs(d.Balance_Tons))} <span class="text-[10px] font-bold text-rose-400">SHORTAGE</span></h5>
+                    <div class="mt-4"><div class="flex justify-between text-[9px] font-bold mb-1"><span>SUFFICIENCY INDEX</span><span>${sIdx}%</span></div>
+                    <div class="w-full bg-rose-50 h-2 rounded-full overflow-hidden"><div class="bg-rose-500 h-full" style="width: ${sIdx}%"></div></div></div>
+                </div>`;
+            });
+        }
+
+        // --- AI ---
+        document.getElementById('chat-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') askAI();
+        });
+
+        async function askAI() {
+            const inp = document.getElementById('chat-input');
+            const msg = inp.value.trim(); if (!msg) return;
+            const box = document.getElementById('chat-box');
+
+            // Add User Message
+            box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-govt-navy text-white p-4 rounded-xl rounded-tr-none shadow-sm max-w-[85%] text-left">${msg}</div></div>`;
+            inp.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            // Add Loading Indicator
+            const loadingId = 'loading-' + Date.now();
+            box.innerHTML += `<div id="${loadingId}" class="flex mb-4"><div class="bg-slate-100 text-slate-500 p-4 rounded-xl rounded-tl-none shadow-sm text-xs italic flex items-center">
+                <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce mr-1"></span>
+                <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce mr-1" style="animation-delay: 0.1s"></span>
+                <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+            </div></div>`;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const d = await res.json();
+
+                // Remove Loading
+                document.getElementById(loadingId).remove();
+
+                // Format Response (Markdown-like parsing)
+                let raw = d.response || "No response received.";
+                // 1. Convert **text** to <strong>text</strong>
+                let formatted = raw.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-govt-navy">$1</strong>');
+                // 2. Convert leading * to bullets
+                formatted = formatted.replace(/^\s*\*\s/gm, '• ');
+
+                // Add AI Response
+                box.innerHTML += `<div class="flex mb-4"><div class="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm max-w-[85%] whitespace-pre-wrap text-left leading-relaxed text-slate-600">${formatted}</div></div>`;
+            } catch (e) {
+                console.error("Chat Error:", e);
+                document.getElementById(loadingId).remove();
+                box.innerHTML += `<div class="flex mb-4"><div class="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl rounded-tl-none shadow-sm text-[11px] font-bold">⚠️ SYSTEM ERROR: Unable to reach intelligence engine.</div></div>`;
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        load();
+    </script>
+</body>
+
+</html>
