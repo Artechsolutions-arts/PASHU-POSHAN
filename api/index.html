@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -115,6 +116,10 @@
             <button onclick="switchView('ai')" data-view="ai"
                 class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
                 <span class="mr-3">🤖</span> Pashu Sahayak AI
+            </button>
+            <button onclick="switchView('sandbox')" data-view="sandbox"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
+                <span class="mr-3">🧪</span> Analytics Sandbox
             </button>
         </nav>
         <div class="absolute bottom-10 left-6 text-[10px] text-slate-500 font-mono">
@@ -289,6 +294,71 @@
                     </div>
                 </div>
             </div>
+
+            <div id="view-sandbox" class="view-section hidden">
+                <div class="bg-white p-10 rounded-2xl border border-slate-200 shadow-xl max-w-5xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h3 class="text-2xl font-black text-govt-navy mb-2">Personal Data Analytics Sandbox</h3>
+                        <p class="text-slate-500 text-sm">Upload your own Animal or Agricultural dataset (CSV/Excel) for
+                            instant visual profiling.</p>
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center hover:border-blue-500 transition-all group cursor-pointer relative"
+                        id="drop-zone">
+                        <input type="file" id="sandbox-upload" class="absolute inset-0 opacity-0 cursor-pointer"
+                            accept=".csv,.xlsx,.xls">
+                        <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">📁</div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Click or Drag & Drop File
+                        </p>
+                        <p class="text-[10px] text-slate-300 mt-2">Supports CSV, XLSX, XLS (Max 10MB)</p>
+                    </div>
+
+                    <div id="sandbox-results" class="mt-10 hidden">
+                        <div class="grid grid-cols-3 gap-6 mb-10">
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Total Records</p>
+                                <h4 id="sb-count" class="text-2xl font-black text-govt-navy">--</h4>
+                            </div>
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Columns Identified</p>
+                                <h4 id="sb-cols" class="text-2xl font-black text-govt-navy">--</h4>
+                            </div>
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Data Density</p>
+                                <h4 id="sb-density" class="text-2xl font-black text-govt-navy">-- %</h4>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-xl border border-slate-200">
+                                <h5 class="text-xs font-bold text-govt-navy uppercase mb-6" id="sb-chart1-title">
+                                    Distribution Analysis</h5>
+                                <canvas id="sb-chart1" height="300"></canvas>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl border border-slate-200">
+                                <h5 class="text-xs font-bold text-govt-navy uppercase mb-6" id="sb-chart2-title">
+                                    Categorical Composition</h5>
+                                <canvas id="sb-chart2" height="300"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 bg-slate-50 rounded-xl overflow-hidden border border-slate-100">
+                            <div class="p-4 bg-slate-100 border-b border-slate-200 flex justify-between items-center">
+                                <h5 class="text-[10px] font-bold text-slate-500 uppercase">Data Preview (First 10 Rows)
+                                </h5>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-[10px] text-left">
+                                    <thead id="sb-table-head"
+                                        class="bg-slate-50 text-slate-400 font-bold uppercase border-b border-slate-200">
+                                    </thead>
+                                    <tbody id="sb-table-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -340,7 +410,14 @@
                 else b.classList.remove('nav-active');
             });
 
-            const map = { 'overview': 'Executive Overview', 'supply': 'Supply Profile', 'demand': 'Demand Dynamics', 'risk': 'Risk & Vulnerability', 'ai': 'Pashu Sahayak Assistant' };
+            const map = {
+                'overview': 'Executive Overview',
+                'supply': 'Supply Profile',
+                'demand': 'Demand Dynamics',
+                'risk': 'Risk & Vulnerability',
+                'ai': 'Pashu Sahayak Assistant',
+                'sandbox': 'Analytics Sandbox'
+            };
             document.getElementById('view-title').innerText = map[vid];
             render();
         }
@@ -611,6 +688,98 @@
                 box.innerHTML += `<div class="flex mb-4"><div class="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl rounded-tl-none shadow-sm text-[11px] font-bold">⚠️ SYSTEM ERROR: Unable to reach intelligence engine.</div></div>`;
             }
             box.scrollTop = box.scrollHeight;
+        }
+
+        // --- SANDBOX ENGINE ---
+        document.getElementById('sandbox-upload').addEventListener('change', handleFileUpload);
+
+        async function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const data = evt.target.result;
+                let workbook;
+                if (file.name.endsWith('.csv')) {
+                    const csv = new TextDecoder().decode(data);
+                    workbook = XLSX.read(csv, { type: 'string' });
+                } else {
+                    workbook = XLSX.read(data, { type: 'array' });
+                }
+
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                processSandboxData(jsonData);
+            };
+
+            if (file.name.endsWith('.csv')) reader.readAsArrayBuffer(file);
+            else reader.readAsArrayBuffer(file);
+        }
+
+        function processSandboxData(data) {
+            if (!data || data.length === 0) return;
+
+            document.getElementById('sandbox-results').classList.remove('hidden');
+
+            // Metrics
+            const cols = Object.keys(data[0]);
+            document.getElementById('sb-count').innerText = data.length;
+            document.getElementById('sb-cols').innerText = cols.length;
+
+            const numCols = cols.filter(c => typeof data[0][c] === 'number');
+            const catCols = cols.filter(c => typeof data[0][c] === 'string');
+
+            document.getElementById('sb-density').innerText = ((numCols.length / cols.length) * 100).toFixed(0);
+
+            // Table Preview
+            const head = document.getElementById('sb-table-head');
+            const body = document.getElementById('sb-table-body');
+            head.innerHTML = '<tr>' + cols.map(c => `<th class="px-4 py-2">${c}</th>`).join('') + '</tr>';
+            body.innerHTML = data.slice(0, 10).map(row =>
+                `<tr>` + cols.map(c => `<td class="px-4 py-2 border-r border-slate-50">${row[c] || '-'}</td>`).join('') + `</tr>`
+            ).join('');
+
+            // Charts
+            if (numCols.length > 0 && catCols.length > 0) {
+                const labelCol = catCols[0];
+                const valCol = numCols[0];
+                const chartData = data.slice(0, 15);
+
+                const ctx1 = document.getElementById('sb-chart1').getContext('2d');
+                document.getElementById('sb-chart1-title').innerText = `Comparison: ${labelCol} vs ${valCol}`;
+                charts.sb1 = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.map(d => d[labelCol]),
+                        datasets: [{
+                            label: valCol,
+                            data: chartData.map(d => d[valCol]),
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { display: false } } }
+                });
+
+                const ctx2 = document.getElementById('sb-chart2').getContext('2d');
+                document.getElementById('sb-chart2-title').innerText = `Composition of ${labelCol}`;
+                charts.sb2 = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartData.map(d => d[labelCol]),
+                        datasets: [{
+                            data: chartData.map(d => d[valCol]),
+                            backgroundColor: ['#0F172A', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
+                        }]
+                    },
+                    options: { cutout: '60%', plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } } } }
+                });
+            }
+
+            // Scroll to results
+            document.getElementById('sandbox-results').scrollIntoView({ behavior: 'smooth' });
         }
 
         load();

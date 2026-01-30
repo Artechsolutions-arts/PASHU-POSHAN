@@ -19,7 +19,55 @@ def render_chatbot():
     # Check for custom uploaded data
     custom_df = st.session_state.get('custom_file_data')
 
-
+    # Advanced Floating Chat Interface using CSS
+    st.markdown("""
+    <style>
+    .chat-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e2e8f0;
+    }
+    .chat-header {
+        background: #064e3b;
+        color: white;
+        padding: 15px;
+        border-radius: 15px 15px 0 0;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    /* Simple button to toggle chat */
+    .chat-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: #059669;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        cursor: pointer;
+        z-index: 1001;
+        font-size: 24px;
+        transition: transform 0.3s;
+    }
+    .chat-toggle:hover { transform: scale(1.1); }
+    </style>
+    """, unsafe_allow_html=True)
 
     # We'll use a standard Streamlit expander instead of complex JS for reliability
     with st.sidebar:

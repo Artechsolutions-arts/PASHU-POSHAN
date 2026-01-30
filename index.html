@@ -85,6 +85,115 @@
             background-color: #FEE2E2;
             color: #991B1B;
         }
+
+        /* FLOATING CHATBOT STYLES */
+        #floating-chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        #chat-window {
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        #chat-toggle-btn {
+            width: 60px;
+            height: 60px;
+            background-color: #0F172A;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #chat-toggle-btn:hover {
+            transform: scale(1.05);
+            background-color: #1e293b;
+        }
+
+        /* CARD POLISH */
+        .kpi-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-left-width: 3px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .bg-emerald-low {
+            background-color: rgba(16, 185, 129, 0.03);
+        }
+
+        .bg-rose-low {
+            background-color: rgba(244, 63, 94, 0.03);
+        }
+
+        .bg-blue-low {
+            background-color: rgba(59, 130, 246, 0.03);
+        }
+
+        .bg-slate-low {
+            background-color: rgba(71, 85, 105, 0.03);
+        }
+
+        .nav-active {
+            background-color: #1e293b;
+            color: white !important;
+            border-left: 3px solid #60a5fa;
+        }
+
+        tbody tr:hover {
+            background-color: #F8FAFC;
+        }
+
+        .chat-header {
+            background: #0F172A;
+            color: white;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chat-window.active {
+            display: flex;
+        }
     </style>
 </head>
 
@@ -95,26 +204,46 @@
             <h1 class="text-2xl font-black tracking-tight">FORAGE</h1>
             <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-[0.2em]">Institutional Analytics</p>
         </div>
-        <nav class="space-y-2" id="sidebar-nav">
+        <nav class="space-y-1" id="sidebar-nav">
             <button onclick="switchView('overview')" data-view="overview"
-                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition nav-active">
-                <span class="mr-3">📊</span> Executive Overview
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition nav-active group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 114 0v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Executive Overview
             </button>
             <button onclick="switchView('supply')" data-view="supply"
-                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
-                <span class="mr-3">🌾</span> Supply Profile
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Supply Profile
             </button>
             <button onclick="switchView('demand')" data-view="demand"
-                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
-                <span class="mr-3">🐄</span> Demand Dynamics
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Demand Dynamics
             </button>
             <button onclick="switchView('risk')" data-view="risk"
-                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
-                <span class="mr-3">⚠️</span> Risk & Vulnerability
-            </button>
-            <button onclick="switchView('ai')" data-view="ai"
-                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition">
-                <span class="mr-3">🤖</span> Pashu Sahayak AI
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 17c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Risk & Vulnerability
             </button>
         </nav>
         <div class="absolute bottom-10 left-6 text-[10px] text-slate-500 font-mono">
@@ -141,7 +270,7 @@
                     <option value="all">ANDHRA PRADESH (STATE)</option>
                 </select>
                 <button
-                    class="bg-govt-navy text-white text-[10px] font-bold px-4 py-2 rounded-md hover:bg-slate-800 transition">EXPORT
+                    class="border border-slate-200 text-govt-navy text-[10px] font-bold px-4 py-2 rounded-md hover:bg-slate-50 transition shadow-sm">EXPORT
                     DATA</button>
             </div>
         </header>
@@ -149,34 +278,34 @@
         <main class="p-10">
             <!-- Global KPIs -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div class="kpi-card border-l-blue-600 shadow-sm">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Gross Fodder Supply
+                <div class="kpi-card border-l-blue-600 shadow-sm bg-blue-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Gross Fodder Supply
                     </p>
                     <div class="flex items-baseline">
-                        <h3 class="text-2xl font-black text-govt-navy" id="kpi-supply">--</h3><span
-                            class="ml-1 text-[10px] font-bold text-slate-400">Tons</span>
+                        <h3 class="text-2xl font-bold text-govt-navy" id="kpi-supply">--</h3><span
+                            class="ml-1 text-[9px] font-bold text-slate-400">Tons</span>
                     </div>
                 </div>
-                <div class="kpi-card border-l-slate-400 shadow-sm">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Dry Matter
+                <div class="kpi-card border-l-slate-400 shadow-sm bg-slate-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Total Dry Matter
                         Demand</p>
                     <div class="flex items-baseline">
-                        <h3 class="text-2xl font-black text-govt-navy" id="kpi-demand">--</h3><span
-                            class="ml-1 text-[10px] font-bold text-slate-400">Tons</span>
+                        <h3 class="text-2xl font-bold text-govt-navy" id="kpi-demand">--</h3><span
+                            class="ml-1 text-[9px] font-bold text-slate-400">Tons</span>
                     </div>
                 </div>
-                <div class="kpi-card border-l-rose-500 shadow-sm">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Consolidated Net Gap
+                <div class="kpi-card border-l-rose-500 shadow-sm bg-rose-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Consolidated Net Gap
                     </p>
                     <div class="flex items-baseline">
-                        <h3 class="text-2xl font-black text-rose-700" id="kpi-gap">--</h3><span
-                            class="ml-1 text-[10px] font-bold text-rose-400">Tons</span>
+                        <h3 class="text-2xl font-bold text-rose-700" id="kpi-gap">--</h3><span
+                            class="ml-1 text-[9px] font-bold text-rose-400">Tons</span>
                     </div>
                 </div>
-                <div class="kpi-card border-l-emerald-500 shadow-sm">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Sufficiency Index</p>
+                <div class="kpi-card border-l-emerald-500 shadow-sm bg-emerald-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Sufficiency Index</p>
                     <div class="flex items-baseline">
-                        <h3 class="text-2xl font-black text-emerald-700" id="kpi-percent">--%</h3>
+                        <h3 class="text-2xl font-bold text-emerald-700" id="kpi-percent">--%</h3>
                     </div>
                 </div>
             </div>
@@ -260,36 +389,66 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="risk-grid"></div>
             </div>
+        </main>
+    </div>
 
-            <div id="view-ai" class="view-section hidden">
-                <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-                    <div class="govt-navy p-6 text-white flex justify-between items-center">
-                        <div>
-                            <h3 class="font-bold">Pashu Sahayak Assistant</h3>
-                            <p class="text-[10px] text-slate-400 font-mono tracking-tighter">SECURE KNOWLEDGE RETRIEVAL
-                                SERVICE</p>
-                        </div>
-                        <div class="text-[10px] bg-blue-600 px-3 py-1 rounded font-bold">READY</div>
-                    </div>
-                    <div id="chat-box"
-                        class="h-96 overflow-y-auto p-8 bg-slate-50 space-y-4 text-xs font-medium custom-scrollbar">
-                        <div class="flex">
-                            <div
-                                class="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm max-w-[85%]">
-                                Welcome. I have indexed the 2024 Fodder Dynamics Database. You may query
-                                district-specific biomass trends or state-wide deficit projections.</div>
-                        </div>
-                    </div>
-                    <div class="p-6 bg-white border-t border-slate-100 flex space-x-3">
-                        <input id="chat-input" type="text"
-                            placeholder="e.g. 'Show me the crop breakdown for Nellore district'"
-                            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-xs outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold">
-                        <button onclick="askAI()"
-                            class="bg-govt-navy text-white px-6 rounded-lg text-xs font-bold shadow-md hover:bg-slate-800 transition-all">QUERY</button>
+    <!-- FLOATING CHATBOT -->
+    <div id="floating-chat-widget">
+        <div id="chat-window">
+            <div class="chat-header">
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider">Pashu Sahayak AI</h3>
+                    <p class="text-[9px] text-slate-400 font-mono">Live Intelligence</p>
+                </div>
+                <button onclick="toggleChat()" class="text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div id="chat-box"
+                class="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-4 text-[11px] font-medium custom-scrollbar">
+                <div class="flex">
+                    <div
+                        class="bg-white border border-slate-200 p-3 rounded-xl rounded-tl-none shadow-sm max-w-[85%] text-slate-800">
+                        Welcome. I have indexed the 2024 Fodder Dynamics Database. How can I assist with your analysis
+                        today?
                     </div>
                 </div>
             </div>
-        </main>
+            <div class="p-4 bg-white border-t border-slate-100 flex flex-col space-y-2">
+                <div class="flex items-center space-x-2">
+                    <input id="chat-upload" type="file" accept=".csv,.xlsx,.xls" class="hidden"
+                        onchange="handleUpload(this)">
+                    <button onclick="document.getElementById('chat-upload').click()"
+                        class="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-lg transition-all"
+                        title="Upload Dataset">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                    <input id="chat-input" type="text" placeholder="Ask or analyze data..."
+                        class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-[11px] outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold">
+                    <button onclick="askAI()"
+                        class="govt-navy text-white p-2 rounded-lg shadow-md hover:bg-slate-800 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="chat-toggle-btn" onclick="toggleChat()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </div>
     </div>
 
     <script>
@@ -559,6 +718,50 @@
         }
 
         // --- AI ---
+        async function handleUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const box = document.getElementById('chat-box');
+
+            // Add UI Notification
+            box.innerHTML += `<div class="flex mb-4"><div class="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-xl shadow-sm text-[10px] font-bold">📤 Uploading ${file.name}...</div></div>`;
+            box.scrollTop = box.scrollHeight;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const d = await res.json();
+
+                if (res.ok) {
+                    box.innerHTML += `<div class="flex mb-4"><div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-xl shadow-sm text-[10px]">
+                        <strong>✅ Dataset Indexed!</strong><br>
+                        Rows: ${d.summary.rows}<br>
+                        Columns: ${d.summary.cols.join(', ')}<br><br>
+                        I can now provide custom predictions and analysis based on this file. 
+                        Try asking: <em>"Analyze this data and predict shortages"</em>
+                    </div></div>`;
+                } else {
+                    throw new Error(d.message);
+                }
+            } catch (e) {
+                box.innerHTML += `<div class="flex mb-4"><div class="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl shadow-sm text-[10px] font-bold">⚠️ Upload Failed: ${e.message}</div></div>`;
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.classList.toggle('active');
+            if (win.classList.contains('active')) {
+                document.getElementById('chat-input').focus();
+            }
+        }
+
         document.getElementById('chat-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') askAI();
         });
@@ -569,18 +772,23 @@
             const box = document.getElementById('chat-box');
 
             // Add User Message
-            box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-govt-navy text-white p-4 rounded-xl rounded-tr-none shadow-sm max-w-[85%] text-left">${msg}</div></div>`;
+            box.innerHTML += `<div class="flex justify-end mb-4"><div class="govt-navy text-white p-3 rounded-xl rounded-tr-none shadow-sm max-w-[85%] text-left">${msg}</div></div>`;
             inp.value = '';
             box.scrollTop = box.scrollHeight;
 
             // Add Loading Indicator
             const loadingId = 'loading-' + Date.now();
-            box.innerHTML += `<div id="${loadingId}" class="flex mb-4"><div class="bg-slate-100 text-slate-500 p-4 rounded-xl rounded-tl-none shadow-sm text-xs italic flex items-center">
-                <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce mr-1"></span>
-                <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce mr-1" style="animation-delay: 0.1s"></span>
-                <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+            box.innerHTML += `<div id="${loadingId}" class="flex mb-4"><div class="bg-slate-200 text-slate-500 p-3 rounded-xl rounded-tl-none shadow-sm text-[10px] italic flex items-center">
+                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce mr-1"></span>
+                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce mr-1" style="animation-delay: 0.1s"></span>
+                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
             </div></div>`;
             box.scrollTop = box.scrollHeight;
+
+            // Create AI Bubble for Streaming
+            const aiBubbleId = 'ai-' + Date.now();
+            box.innerHTML += `<div class="flex mb-4"><div id="${aiBubbleId}" class="bg-white border border-slate-200 p-3 rounded-xl rounded-tl-none shadow-sm max-w-[85%] whitespace-pre-wrap text-left leading-relaxed text-slate-800 text-[11px]"></div></div>`;
+            const aiBubble = document.getElementById(aiBubbleId);
 
             try {
                 const res = await fetch('/api/chat', {
@@ -591,26 +799,32 @@
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-                const d = await res.json();
-
                 // Remove Loading
-                document.getElementById(loadingId).remove();
+                if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
 
-                // Format Response (Markdown-like parsing)
-                let raw = d.response || "No response received.";
-                // 1. Convert **text** to <strong>text</strong>
-                let formatted = raw.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-govt-navy">$1</strong>');
-                // 2. Convert leading * to bullets
-                formatted = formatted.replace(/^\s*\*\s/gm, '• ');
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = "";
 
-                // Add AI Response
-                box.innerHTML += `<div class="flex mb-4"><div class="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none shadow-sm max-w-[85%] whitespace-pre-wrap text-left leading-relaxed text-slate-600">${formatted}</div></div>`;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    fullText += decoder.decode(value, { stream: true });
+
+                    // Simple Format
+                    let formatted = fullText
+                        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-govt-navy">$1</strong>')
+                        .replace(/^\s*\*\s/gm, '• ');
+
+                    aiBubble.innerHTML = formatted;
+                    box.scrollTop = box.scrollHeight;
+                }
             } catch (e) {
                 console.error("Chat Error:", e);
-                document.getElementById(loadingId).remove();
-                box.innerHTML += `<div class="flex mb-4"><div class="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl rounded-tl-none shadow-sm text-[11px] font-bold">⚠️ SYSTEM ERROR: Unable to reach intelligence engine.</div></div>`;
+                if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                aiBubble.innerHTML = `<div class="text-rose-700 font-bold">⚠️ Connection lost. Try again.</div>`;
             }
-            box.scrollTop = box.scrollHeight;
         }
 
         load();

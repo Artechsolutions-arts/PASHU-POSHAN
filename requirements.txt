@@ -10,3 +10,4 @@ langchain-ollama
 fastapi
 uvicorn
 jinja2
+python-multipart

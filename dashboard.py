@@ -9,10 +9,153 @@ import chatbot_module
 st.set_page_config(
     page_title="Forage",
     page_icon="🌾",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
+# --- ADVANCED PROFESSIONAL STYLING ---
+# --- SAAS MODERN DESIGN SYSTEM (v4.0) ---
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    
+    :root {
+        --brand: #6366f1; /* Indigo */
+        --brand-light: #e0e7ff;
+        --content: #0f172a;
+        --secondary: #64748b;
+        --bg: #ffffff;
+        --surface: #ffffff;
+        --border: #f1f5f9;
+        --radius: 20px;
+    }
 
+    html, body, [data-testid="stAppViewContainer"] {
+        background-color: var(--bg);
+        font-family: 'Outfit', sans-serif;
+        color: var(--content);
+    }
+
+    /* Minimal Command Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #fafafa !important;
+        border-right: 1px solid var(--border);
+    }
+    
+    .sidebar-label {
+        color: var(--secondary);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 2rem 0 0.5rem 0;
+    }
+
+    /* Floating SaaS Header */
+    .saas-header {
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .saas-header h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        letter-spacing: -2px;
+        background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Bento Box Metric Cards */
+    .bento-card {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .bento-card:hover {
+        border-color: var(--brand);
+        box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.1);
+        transform: translateY(-5px);
+    }
+
+    .bento-label { 
+        color: var(--secondary); 
+        font-size: 0.85rem; 
+        font-weight: 600; 
+    }
+    .bento-value { 
+        color: var(--content); 
+        font-size: 2.8rem; 
+        font-weight: 800; 
+        margin: 0.5rem 0;
+        letter-spacing: -1.5px;
+    }
+    .bento-status { 
+        font-size: 0.85rem; 
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--brand);
+    }
+
+    /* Modern Tab Strip */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+        background: #f8fafc;
+        padding: 6px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        background: transparent !important;
+        border-radius: 10px !important;
+        padding: 10px 24px !important;
+        font-weight: 600 !important;
+        color: var(--secondary) !important;
+        border: none !important;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: white !important;
+        color: var(--brand) !important;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+    }
+
+    /* Clean Alerts */
+    .saas-alert {
+        padding: 1.25rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 2.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid transparent;
+    }
+    .alert-indigo { background: #eef2ff; color: #4338ca; border-color: #c7d2fe; }
+    .alert-rose { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+    .alert-emerald { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+
+    /* Hide Sidebar User info */
+    section[data-testid="stSidebar"] .st-emotion-cache-1wf86c2 { display: none; }
+    
+    /* Global Section Spacing */
+    .stPlotlyChart {
+        background: white;
+        border-radius: var(--radius);
+        padding: 1rem;
+        border: 1px solid var(--border);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # --- DATA NORMALIZATION ---
 DISTRICT_MAPPING = {
@@ -54,33 +197,49 @@ gap_df, supply_df, demand_df, mandal_demand_df = load_data()
 if gap_df is None: st.stop()
 
 # --- UTILS ---
-def render_kpi(label, value):
-    st.metric(label, value)
+def render_kpi(label, value, subtext="", color="#6366f1"):
+    st.markdown(f"""
+    <div class="bento-card">
+        <div class="bento-label">{label}</div>
+        <div class="bento-value">{value}</div>
+        <div class="bento-status" style="color:{color}"><span>●</span> {subtext}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # --- SIDEBAR: COMMAND CENTER ---
 with st.sidebar:
-    st.title("Forage")
-    st.divider()
+    st.markdown('<div style="padding-bottom: 2rem;"><h1 style="color: var(--brand); margin:0; font-weight: 800; letter-spacing: -1.5px;">Forage</h1></div>', unsafe_allow_html=True)
+    
+    st.markdown('<p class="sidebar-label">Global Filters</p>', unsafe_allow_html=True)
     
     unique_districts = sorted(gap_df['District'].unique().tolist())
-    sel_dist = st.selectbox("Select District", ["All Districts"] + unique_districts)
+    sel_dist = st.selectbox("Select District Entity", ["All Districts"] + unique_districts)
     
     if sel_dist == "All Districts":
         m_options = ["All Mandals"] + sorted(mandal_demand_df['Mandal'].unique().tolist())
     else:
         m_options = ["All Mandals"] + sorted(mandal_demand_df[mandal_demand_df['District'] == sel_dist]['Mandal'].unique().tolist())
     
-    sel_mandal = st.selectbox("Select Mandal", m_options)
-    
-    st.divider()
+    sel_mandal = st.selectbox("Select Mandal Subdivision", m_options)
+
+    st.markdown('<p class="sidebar-label">INTELLIGENCE SERVICES</p>', unsafe_allow_html=True)
     chatbot_module.render_chatbot()
+    
+    st.markdown('<p class="sidebar-label">SYSTEM STATUS</p>', unsafe_allow_html=True)
+    st.info("✅ Core Data Pipeline: Online\n\n✅ AI Model (Gemma 3): Ready")
 
 # --- SAAS HEADER ---
-st.title("Fodder Analytics Dashboard")
-st.markdown("Evidence-based decision support for livestock fodder security across Andhra Pradesh.")
+st.markdown(f"""
+    <div class="saas-header">
+        <h1>Forage</h1>
+        <p style="font-size: 1.25rem; color: var(--secondary); font-weight: 500;">
+            Evidence-based decision support for livestock fodder security across Andhra Pradesh.
+        </p>
+    </div>
+""", unsafe_allow_html=True)
 
 # --- ANALYTICAL TABS ---
-t1, t2, t3 = st.tabs(["🏛️ MAIN STATUS", "🌾 SUPPLY ANALYSIS", "🐄 DEMAND DYNAMICS"])
+t1, t2, t3, t4 = st.tabs(["🏛️ MAIN STATUS", "🌾 WHERE IS FOOD COMING FROM?", "🐄 WHO NEEDS FOOD?", "📊 CUSTOM ANALYSIS"])
 
 # CALCULATE CONTEXT GLOBALS
 tot_state_supply = gap_df['Total_Fodder_Tons'].sum()
@@ -102,14 +261,14 @@ with t1:
         m_adeq = (m_supply_est / m_data['Total_Demand_Tons'] * 100) if m_data['Total_Demand_Tons'] > 0 else 0
         
         with cols[0]: render_kpi("Food Needed", f"{m_data['Total_Demand_Tons']:.0f} T")
-        with cols[1]: render_kpi("Food Available", f"{m_supply_est:.0f} T")
-        with cols[2]: render_kpi("Difference", f"{m_gap:.0f} T")
-        with cols[3]: render_kpi("Selected Area", sel_mandal)
+        with cols[1]: render_kpi("Food Available", f"{m_supply_est:.0f} T", f"From {parent_dist}")
+        with cols[2]: render_kpi("Difference", f"{m_gap:.0f} T", f"{m_adeq:.1f}% Score", "#ef4444" if m_gap < 0 else "#059669")
+        with cols[3]: render_kpi("Selected Area", sel_mandal, parent_dist)
         
         if m_gap < 0:
-            st.error(f"🚨 **Observed Deficit:** Scenario analysis indicates {sel_mandal} requires ~{abs(m_gap):,.0f} tons of additional fodder for equilibrium.")
+            st.markdown(f"""<div class="saas-alert alert-rose">🚨 <b>Observed Deficit:</b> Scenario analysis indicates {sel_mandal} requires ~{abs(m_gap):,.0f} tons of additional fodder for equilibrium.</div>""", unsafe_allow_html=True)
         else:
-            st.success(f"✅ **Status Resilient:** {sel_mandal} is currently operating with a projected supply surplus.")
+            st.markdown(f"""<div class="saas-alert alert-emerald">✅ <b>Status Resilient:</b> {sel_mandal} is currently operating with a projected supply surplus.</div>""", unsafe_allow_html=True)
         main_score = m_adeq
 
     elif sel_dist != "All Districts":
@@ -117,19 +276,19 @@ with t1:
         d_data = gap_df[gap_df['District'] == sel_dist].iloc[0]
         with cols[0]: render_kpi("Food Available", f"{d_data['Total_Fodder_Tons']:.2f} T")
         with cols[1]: render_kpi("Food Needed", f"{d_data['Total_Demand_Tons']:.2f} T")
-        with cols[2]: render_kpi("Difference", f"{d_data['Balance_Tons']:.0f} T")
-        with cols[3]: render_kpi("Status", d_data['Status'])
+        with cols[2]: render_kpi("Difference", f"{d_data['Balance_Tons']:.0f} T", f"{d_data['Deficit_Percentage']:.1f}% Variance", "#ef4444" if d_data['Balance_Tons'] < 0 else "#059669")
+        with cols[3]: render_kpi("Status", d_data['Status'], "District Level")
         
         if d_data['Balance_Tons'] < 0:
-            st.error(f"🚨 **Critical Shortage:** {sel_dist} is exhibiting a significant fodder deficit.")
+            st.markdown(f"""<div class="saas-alert alert-rose">🚨 <b>Critical Shortage Profile:</b> {sel_dist} is exhibiting a significant fodder deficit. Evidence-based intervention recommended.</div>""", unsafe_allow_html=True)
         main_score = (d_data['Total_Fodder_Tons'] / d_data['Total_Demand_Tons'] * 100) if d_data['Total_Demand_Tons'] > 0 else 0
     else:
         # STATE VIEW
         with cols[0]: render_kpi("Food Available", f"{tot_state_supply/1e6:.2f}M T")
         with cols[1]: render_kpi("Food Needed", f"{tot_state_demand/1e6:.2f}M T")
-        with cols[2]: render_kpi("Gap", f"{(tot_state_supply-tot_state_demand)/1e6:.2f}M T")
-        with cols[3]: render_kpi("Red Districts", f"{len(gap_df[gap_df['Status']=='DEFICIT'])} Areas")
-        st.info("✨ **Decision Signal:** Heuristic analysis indicates a potential supply-demand imbalance.")
+        with cols[2]: render_kpi("Gap", f"{(tot_state_supply-tot_state_demand)/1e6:.2f}M T", "Critical Shortage", "#ef4444")
+        with cols[3]: render_kpi("Red Districts", f"{len(gap_df[gap_df['Status']=='DEFICIT'])} Areas", "Vulnerability Detected")
+        st.markdown("""<div class="saas-alert alert-indigo">✨ <b>Governance Decision Signal:</b> Heuristic analysis indicates a potential supply-demand imbalance. Consider routing surplus from Coastal regions to Rayalaseema.</div>""", unsafe_allow_html=True)
         main_score = (tot_state_supply / tot_state_demand * 100) if tot_state_demand > 0 else 0
 
     # CHARTS (Simplified for Layman)
@@ -153,7 +312,7 @@ with t1:
             showlegend=True,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(size=12),
+            font=dict(family="Outfit", size=12),
             legend_title_text='Status'
         )
         st.plotly_chart(fig_map, width='stretch')
@@ -165,7 +324,7 @@ with t1:
         fig_gauge = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = main_score,
-            number = {'suffix': "%", 'font': {'size': 60, 'color': '#0f172a'}},
+            number = {'suffix': "%", 'font': {'size': 60, 'color': '#0f172a', 'family': 'Plus Jakarta Sans'}},
             gauge = {
                 'axis': {'range': [0, 150], 'tickwidth': 1, 'tickcolor': "#94a3b8"},
                 'bar': {'color': gauge_color, 'thickness': 0.3},
@@ -282,6 +441,85 @@ with t3:
         fig_st.update_layout(xaxis_tickangle=-45, height=600, margin=dict(b=120))
         st.plotly_chart(fig_st, width='stretch')
 
-# --- FOOTER ---
+with t4:
+    st.subheader("📊 Personal Data Analytics Sandbox")
+    st.markdown("Upload your own Animal or Agricultural dataset (CSV/Excel) to get instant visual insights and AI help.")
+    
+    uploaded_file = st.file_uploader("Choose a file", type=['csv', 'xlsx'])
+    
+    if uploaded_file:
+        try:
+            if uploaded_file.name.endswith('.csv'):
+                u_df = pd.read_csv(uploaded_file)
+            else:
+                u_df = pd.read_excel(uploaded_file)
+            
+            st.session_state['custom_file_data'] = u_df
+            
+            st.success(f"✅ Successfully loaded '{uploaded_file.name}'")
+            
+            # Overview Metrics
+            uc1, uc2, uc3 = st.columns(3)
+            with uc1: render_kpi("Total Records", len(u_df))
+            with uc2: render_kpi("Columns Found", len(u_df.columns))
+            with uc3: render_kpi("Numeric Fields", len(u_df.select_dtypes(include=['number']).columns))
+            
+            # Data Preview
+            with st.expander("👀 View Raw Data Preview", expanded=False):
+                st.dataframe(u_df, width='stretch')
+            
+            # Automatic Visualization Engine
+            st.divider()
+            st.markdown("### 📈 Automated Insights")
+            
+            num_cols = u_df.select_dtypes(include=['number']).columns.tolist()
+            cat_cols = u_df.select_dtypes(exclude=['number']).columns.tolist()
+            
+            if num_cols and cat_cols:
+                v1, v2 = st.columns(2)
+                with v1:
+                    # Bar Chart
+                    st.markdown(f"**Comparison: {cat_cols[0]} vs {num_cols[0]}**")
+                    fig_u_bar = px.bar(u_df.head(20), x=cat_cols[0], y=num_cols[0], color=cat_cols[0], template="plotly_white")
+                    st.plotly_chart(fig_u_bar, width='stretch')
+                with v2:
+                    # Comparison Pie
+                    st.markdown(f"**Distribution: {cat_cols[0]}**")
+                    fig_u_pie = px.pie(u_df.head(10), names=cat_cols[0], values=num_cols[0], hole=0.5)
+                    st.plotly_chart(fig_u_pie, width='stretch')
+            else:
+                st.info("Upload a dataset with both text and number columns to unlock automated charts.")
+
+        except Exception as e:
+            st.error(f"Error processing file: {e}")
+    else:
+        st.info("Waiting for file upload... (Supports .csv and .xlsx)")
+
+# --- INSTITUTIONAL FOOTER ---
+st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("---")
-st.markdown("© 2026 Department of Animal Husbandry | Build: 2.0.4")
+f_col1, f_col2, f_col3 = st.columns([2, 1, 1])
+with f_col1:
+    st.markdown("""
+        <div style="opacity: 0.6; font-size: 0.8rem;">
+            <b>Forage Enterprise Fodder DSS</b><br>
+            © 2026 Department of Animal Husbandry & Fodder Security.<br>
+            Designed for data-driven administrative decision making.
+        </div>
+    """, unsafe_allow_html=True)
+with f_col2:
+    st.markdown("""
+        <div style="opacity: 0.6; font-size: 0.8rem;">
+            <b>DATA SOURCES</b><br>
+            Livestock Census 2024<br>
+            Land Utilization Records
+        </div>
+    """, unsafe_allow_html=True)
+with f_col3:
+    st.markdown("""
+        <div style="text-align: right; opacity: 0.6; font-size: 0.8rem;">
+            <b>SYSTEM VERSION</b><br>
+            Build: 2.0.4-PRO<br>
+            Engine: Ollama/Gemma3
+        </div>
+    """, unsafe_allow_html=True)

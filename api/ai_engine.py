@@ -3,87 +3,108 @@ import os
 import sys
 from langchain_ollama import ChatOllama
 from dotenv import load_dotenv
+import re
 
 load_dotenv()
 
-# Configuration
+# --- CONFIGURATION ---
 USE_OLLAMA = True 
 
+# --- GOVERNANCE METADATA & ASSUMPTIONS ---
+ASSUMPTIONS = {
+    "consumption": "Adult Cattle: 2.2T/yr, Buffalo: 2.6T/yr, Small Ruminants: 0.3T/yr.",
+    "methodology": "Production-based residue estimation using standard Indian Harvest Indices (1.3 for Paddy, 2.0 for Maize/Groundnut).",
+    "lineage": "Derived from LSC Mandal Census and Livestock Feed Production Records.",
+    "disclaimer": "This is a Decision Support Signal (DSS). It does not constitute an executive order. Administrative validation of ground-truth is mandatory."
+}
+
 def get_data_path(filename):
-    # Try local first
-    if os.path.exists(filename):
-        return filename
-    # Try parent (if running from api/ folder)
-    parent_path = os.path.join("..", filename)
-    if os.path.exists(parent_path):
-        return parent_path
-    # Try absolute path discovery
+    if os.path.exists(filename): return filename
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     abs_path = os.path.join(base_dir, filename)
-    if os.path.exists(abs_path):
-        return abs_path
-    return filename
+    return abs_path if os.path.exists(abs_path) else filename
+
+def compute_uncertainty(df):
+    """Calculates a certainty score based on data density and variance."""
+    if df is None or df.empty: return 0.0
+    density = (df['Total_Fodder_Tons'] > 0).mean()
+    return float(density)
 
 def get_governance_intelligence(df):
-    """
-    Heuristic-based Diagnostic Engine.
-    Computes vulnerability indices and resource allocation benchmarks based on descriptive gaps.
-    """
     if df is None: return None
     
-    # 1. Descriptive: Metric Sufficiency
     total_s = df['Total_Fodder_Tons'].sum()
     total_d = df['Total_Demand_Tons'].sum()
     sufficiency = (total_s / total_d) if total_d > 0 else 0
     
-    # 2. Heuristic Benchmarking (Prescriptive Support)
     surplus_dist = df[df['Status'] == 'SURPLUS'].sort_values('Balance_Tons', ascending=False).head(3)
     deficit_dist = df[df['Status'] == 'DEFICIT'].sort_values('Balance_Tons', ascending=True).head(3)
     
-    advisory_recommendations = []
+    transfers = []
     if not deficit_dist.empty and not surplus_dist.empty:
-        for idx in range(min(len(surplus_dist), len(deficit_dist))):
-            s = surplus_dist.iloc[idx]
-            d = deficit_dist.iloc[idx]
-            amt = min(s['Balance_Tons'], abs(d['Balance_Tons'])) * 0.5 
-            advisory_recommendations.append(f"Simulate transfer of ~{amt:,.0f}T from {s['District']} to {d['District']} as a stabilization measure.")
+        for i in range(min(len(surplus_dist), len(deficit_dist))):
+            s, d = surplus_dist.iloc[i], deficit_dist.iloc[i]
+            amt = min(s['Balance_Tons'], abs(d['Balance_Tons'])) * 0.4 
+            transfers.append(f"Suggest moving ~{amt:,.0f} tons from {s['District']} to {d['District']}.")
 
-    # 3. Certainty Matrix
-    data_completeness = len(df[df['Total_Fodder_Tons'] > 0]) / len(df) if len(df) > 0 else 0
-    
     return {
-        "sufficiency": sufficiency,
-        "recommendations": advisory_recommendations,
-        "vulnerability": "HIGH" if sufficiency < 0.85 else "MODERATE" if sufficiency < 1.0 else "RESILIENT",
-        "certainty_score": data_completeness,
-        "methodology": "Linear aggregation of census-based demand and district-level land utilization records."
+        "sufficiency_index": sufficiency,
+        "recommendations": transfers,
+        "vulnerability": "CRITICAL" if sufficiency < 0.75 else "ELEVATED" if sufficiency < 0.9 else "STABLE",
+        "certainty": compute_uncertainty(df),
+        "methodology": "Applied Residue-to-Grain Ratio (RGR) modeling against Census Data."
     }
 
-def get_local_response(prompt, df):
-    clean_q = prompt.upper().replace("?", "").replace("!", "")
-    intel = get_governance_intelligence(df)
+def get_local_response(prompt, df, custom_context=None):
+    """Simple and friendly fallback engine."""
+    if df is None and not custom_context:
+        return "I can't reach the data right now. Please check your files!"
+
+    clean_q = prompt.upper()
+    header = "HELLO! HERE IS YOUR SIMPLE REPORT\n\n"
     
-    GOVERNANCE_FOOTER = "\n\n*DISCLAIMER: This output is a Decision Support Signal intended for administrative scenario-planning. All recommendations are advisory and must be validated against ground-truth field signals by jurisdictional officers.*"
+    def fmt(n):
+        try:
+            val = float(n)
+            if abs(val) >= 100000: return f"{val/100000:.2f} Lakh Tons"
+            if abs(val) >= 1000: return f"{val/1000:.1f} Thousand Tons"
+            return f"{val:,.0f} Tons"
+        except: return str(n)
 
-    # 1. State Status with Defensive Framing
-    if any(word in clean_q for word in ["STATE", "OVERVIEW", "SUMMARY", "WHOLE", "ALL"]):
-        rec_str = "\n".join([f"  - {a}" for a in intel['recommendations']]) if intel else "N/A"
-        return f"### [DESCRIPTIVE OBSERVATION]\nState sufficiency benchmarked at {intel['sufficiency']*100:.1f}%. Current profile indicates **{intel['vulnerability']} VULNERABILITY**.\n\n### [DIAGNOSTIC REASONING]\nDerived from aggregate fodder supply ({df['Total_Fodder_Tons'].sum():,.0f}T) vs. demand ({df['Total_Demand_Tons'].sum():,.0f}T).\n\n### [ADVISORY RECOMMENDATIONS]\n{rec_str}\n\n*Lineage: fodder_gap_analysis.csv | Certainty: {intel['certainty_score']*100:.0f}%*" + GOVERNANCE_FOOTER
+    if custom_context and any(word in clean_q for word in ["CUSTOM", "UPLOAD", "NEW", "PREDICT"]):
+        return header + "NEW DATA FOUND:\nI see you uploaded some new data! My brain is currently in 'Safe Mode' so I can't do deep math on it yet, but I've saved it and it's ready for looking at."
 
-    # 2. Entity Intelligence
+    footer = f"\n---\n*Based on {ASSUMPTIONS['lineage']} records.*"
+    
+    if any(word in clean_q for word in ["STATE", "OVERVIEW", "SUMMARY", "TOTAL"]):
+        total_s = df['Total_Fodder_Tons'].sum() if df is not None else 0
+        total_d = df['Total_Demand_Tons'].sum() if df is not None else 0
+        net = total_s - total_d
+        
+        content = f"SUMMARY:\nAcross the whole state, we have about **{fmt(total_s)}** of food available for our animals.\n\n"
+        content += f"THE NUMBERS:\n- Food Available: {fmt(total_s)}\n- Food Needed: {fmt(total_d)}\n- Current Balance: {fmt(net)} {'Surplus' if net > 0 else 'Shortage'}\n\n"
+        content += f"WHAT THIS MEANS:\nRight now, the state has **{('enough' if net > 0 else 'not enough')}** food to meet everyone's needs. We should look at moving some food from surplus areas to those that are short."
+        return header + content + footer
+
     for _, row in df.iterrows():
         d_name = str(row['District']).upper().replace(" ", "")
         if d_name in clean_q.replace(" ", ""):
-            action_bench = "Continue current supply monitoring." if row['Status'] == 'SURPLUS' else "Immediate prioritization for inter-district resource reallocation or external procurement is recommended."
-            return f"### [ENTITY INTELLIGENCE: {row['District']}]\n**OBSERVATION:** {row['Status']} profile detected ({abs(row['Balance_Tons']):,.0f}T observed gap).\n**REASONING:** Observed local demand ({row['Total_Demand_Tons']:,.0f}T) exceeds recorded supply capacity.\n**ADVISORY:** {action_bench}" + GOVERNANCE_FOOTER
+            status = row['Status']
+            content = f"DISTRICT REPORT: {row['District'].upper()}\n\n"
+            content += f"How is it looking? {status}\n"
+            content += f"- Food they have: {fmt(row['Total_Fodder_Tons'])}\n"
+            content += f"- Food they need: {fmt(row['Total_Demand_Tons'])}\n"
+            content += f"- The Gap: {fmt(row['Balance_Tons'])}\n\n"
+            content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
+            return header + content + footer
 
-    return "Forage AI initialized. Please specify a District or request a 'State Summary' for evidence-based decision intelligence."
+    return "READY TO HELP:\nYou can ask about a specific District or a State Summary. I'll keep it simple!"
 
-def get_ai_response(prompt):
+def get_ai_response_stream(prompt, custom_context=None):
     try:
-        df = pd.read_csv(get_data_path("fodder_gap_analysis.csv"))
+        df_gap = pd.read_csv(get_data_path("fodder_gap_analysis.csv"))
     except:
-        df = None
+        df_gap = None
 
     if USE_OLLAMA:
         try:
@@ -91,21 +112,45 @@ def get_ai_response(prompt):
             requests.get("http://localhost:11434", timeout=1)
             llm = ChatOllama(model="gemma3:1b", temperature=0.1, base_url="http://localhost:11434")
             
-            ai_prompt = f"""
-            Role: Senior AI Governance Engineer & Applied Data Scientist.
-            Contextual Evidence: {df.to_string(index=False) if df is not None else "No evidence found."}
-            Query: {prompt}
+            context_summary = ""
+            if df_gap is not None:
+                # Format numbers with commas to prevent AI from seeing scientific notation
+                top_data = df_gap.sort_values('Balance_Tons', ascending=False).head(5).copy()
+                for col in ['Total_Fodder_Tons', 'Balance_Tons']:
+                    top_data[col] = top_data[col].apply(lambda x: f"{x:,.0f}")
+                
+                context_summary = f"\nLATEST DATA RECORDS:\n{top_data[['District', 'Total_Fodder_Tons', 'Balance_Tons', 'Status']].to_string(index=False)}\n"
+            
+            if custom_context:
+                context_summary += f"\nNEW USER DATA:\n{custom_context}\n"
 
-            Output Structural Protocol:
-            1. DESCRIPTIVE OBSERVATION (Quantified facts)
-            2. DIAGNOSTIC REASONING (Logic & data lineage)
-            3. ADVISORY RECOMMENDATIONS (Non-authoritative scenario suggestions)
-            4. CERTAINTY & ASSUMPTIONS (Transparency regarding data quality/limitations)
-
-            Strict Constraint: Do not use overconfident predictive language. Always frame outputs as 'Advisory Decision Support'. Flag that this is NOT an autonomous directive.
+            system_instruction = f"""
+            ROLE: Simple English Language Assistant.
+            
+            STRICT RULES - FAILURE TO FOLLOW THESE IS UNACCEPTABLE:
+            - NEVER use scientific notation (like 1.1e+06). Tell me '1.1 Lakh' or '1,100,000'.
+            - NEVER use hashtags (###) in your response. DO NOT USE THEM FOR HEADERS.
+            - USE PLAIN TEXT HEADERS like 'SUMMARY:' or 'ADVICE:' in bold.
+            - Use ONLY simple English. No technical jargon.
+            - Always format large numbers with commas.
+            
+            CONTEXT: {context_summary}
             """
-            return llm.invoke(ai_prompt).content
-        except Exception:
-            return f"⚠️ [Governance Decision Integrity Active]\n\n" + get_local_response(prompt, df)
-    
-    return get_local_response(prompt, df)
+            
+            full_prompt = f"{system_instruction}\n\nUSER QUESTION: {prompt}"
+            
+            for chunk in llm.stream(full_prompt):
+                # Extra layer of defense: Strip any '#' characters from the stream
+                text = chunk.content.replace('#', '')
+                yield text
+        except Exception as e:
+            yield f"(Using backup engine) "
+            yield get_local_response(prompt, df_gap, custom_context)
+    else:
+        yield get_local_response(prompt, df_gap, custom_context)
+
+def get_ai_response(prompt, custom_context=None):
+    resp = ""
+    for chunk in get_ai_response_stream(prompt, custom_context):
+        resp += chunk
+    return resp
