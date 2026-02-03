@@ -92,6 +92,40 @@ def get_local_response(prompt, df, custom_context=None):
             content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
             return header + content + footer
 
+    # --- PREDICTION LOGIC (NEW) ---
+    # Check if user wants a forecast for a specific district
+    if any(x in clean_q for x in ["PREDICT", "FUTURE", "FORECAST", "NEXT", "OUTLOOK"]):
+        found_district = None
+        for _, row in df.iterrows():
+            d_name = str(row['District']).upper().replace(" ", "")
+            if d_name in clean_q.replace(" ", ""):
+                found_district = row
+                break
+        
+        if found_district is not None:
+            # Simulate a 6-month projection
+            monthly_burn = found_district['Total_Demand_Tons'] / 12
+            current_stock = found_district['Total_Fodder_Tons']
+            
+            p_content = f"🔮 FUTURE FORECAST: {found_district['District'].upper()}\n\n"
+            p_content += f"Based on a monthly consumption of ~{fmt(monthly_burn)}, here is the outlook:\n\n"
+            
+            p_content += "| Month | Est. Stock | Status |\n|---|---|---|\n"
+            
+            months = ["Month 1", "Month 2", "Month 3", "Month 4", "Month 5", "Month 6"]
+            for m in months:
+                current_stock -= monthly_burn
+                status_icon = "🟢 Safe" if current_stock > 0 else "🔴 Deficit"
+                p_content += f"| {m} | {fmt(max(0, current_stock))} | {status_icon} |\n"
+            
+            p_content += "\n**ANALYSIS:** "
+            if current_stock > 0:
+                p_content += "Stocks are healthy! This district is projected to remain food secure for the next 6 months."
+            else:
+                p_content += "Warning! Stocks may run out within this period. Immediate stockpiling is recommended."
+                
+            return header + p_content + footer
+
     # --- KNOWLEDGE BASE (NEW) ---
     KNOWLEDGE_BASE = {
         "DRY MATTER": "DEFINITION:\nDry Matter (DM) is the part of fodder that remains after water is removed. It is the true measure of nutritional value because animals eat to satisfy their DM requirement (approx. 2.5% of body weight).",
