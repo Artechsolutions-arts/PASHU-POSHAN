@@ -92,6 +92,21 @@ def get_local_response(prompt, df, custom_context=None):
             content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
             return header + content + footer
 
+    # --- KNOWLEDGE BASE (NEW) ---
+    KNOWLEDGE_BASE = {
+        "DRY MATTER": "DEFINITION:\nDry Matter (DM) is the part of fodder that remains after water is removed. It is the true measure of nutritional value because animals eat to satisfy their DM requirement (approx. 2.5% of body weight).",
+        "METHODOLOGY": f"HOW WE WORK:\n{ASSUMPTIONS['methodology']}\nWe compare the biomass generated from crops against the census-based requirement of the livestock.",
+        "CROPS": "KEY CROPS:\nThe primary sources of fodder in Andhra Pradesh are Paddy (Straw), Maize (Stalks), and Groundnut (Haulms). Sugarcane tops are also used in some belts.",
+        "SOLUTION": "SUGGESTIONS FOR SHORTAGE:\n1. **Fodder Banks:** Create storage sites in surplus districts.\n2. **Silage:** Convert green fodder into silage for long-term storage.\n3. **Hydroponics:** Rapidly grow maize fodder in 7 days for emergencies.",
+        "SILAGE": "SILAGE:\nPreserved green fodder made by fermentation. It is excellent for dairy cattle as it retains moisture and nutrients during summer months.",
+        "DEFICIT": "WHAT IS A DEFICIT?\nA deficit means the local production of crop residue is LESS than what the animals legally need to eat to stay healthy. This requires importing feed."
+    }
+
+    # Check Knowledge Base
+    for key, answer in KNOWLEDGE_BASE.items():
+        if key in clean_q:
+            return header + f"DOMAIN EXPERT REPORT: {key}\n\n{answer}\n" + footer
+
     # --- SUPERLATIVE LOGIC (NEW) ---
     # 1. Highest Supply
     if any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX"]) and any(x in clean_q for x in ["SUPPLY", "FODDER", "AVAILABLE"]):
