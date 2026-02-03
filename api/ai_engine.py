@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import sys
-from langchain_ollama import ChatOllama
+# from langchain_ollama import ChatOllama # Moved to local import
 from dotenv import load_dotenv
 import re
 
@@ -110,6 +110,7 @@ def get_ai_response_stream(prompt, custom_context=None):
         try:
             import requests
             requests.get("http://localhost:11434", timeout=1)
+            from langchain_ollama import ChatOllama
             llm = ChatOllama(model="gemma3:1b", temperature=0.1, base_url="http://localhost:11434")
             
             context_summary = ""
@@ -125,14 +126,17 @@ def get_ai_response_stream(prompt, custom_context=None):
                 context_summary += f"\nNEW USER DATA:\n{custom_context}\n"
 
             system_instruction = f"""
-            ROLE: Simple English Language Assistant.
+            ROLE: Senior Predictive Agriculture Advisor.
             
-            STRICT RULES - FAILURE TO FOLLOW THESE IS UNACCEPTABLE:
-            - NEVER use scientific notation (like 1.1e+06). Tell me '1.1 Lakh' or '1,100,000'.
-            - NEVER use hashtags (###) in your response. DO NOT USE THEM FOR HEADERS.
-            - USE PLAIN TEXT HEADERS like 'SUMMARY:' or 'ADVICE:' in bold.
-            - Use ONLY simple English. No technical jargon.
-            - Always format large numbers with commas.
+            OBJECTIVE: Analyze current records and PROVIDE PREDICTIONS for the next 6-12 months. 
+            Tell the user what is likely to happen (e.g., 'If this trend continues, District X will face a fodder shortage by summer').
+            
+            STRICT RULES:
+            - PREDICTIONS: You must include a section called 'FUTURE PREDICTIONS:'.
+            - NO SCIENTIFIC NOTATION: Never use '1.1e+06'. Use '11 Lakh' or '1,120,000'.
+            - NO HASHTAGS: Do not use '#' symbols. 
+            - HEADERS: Use bold plain text like **SUMMARY:** or **PREDICTIONS:**.
+            - SIMPLE ENGLISH: Explain like you are talking to a farmer.
             
             CONTEXT: {context_summary}
             """
@@ -140,7 +144,7 @@ def get_ai_response_stream(prompt, custom_context=None):
             full_prompt = f"{system_instruction}\n\nUSER QUESTION: {prompt}"
             
             for chunk in llm.stream(full_prompt):
-                # Extra layer of defense: Strip any '#' characters from the stream
+                # Strip hashtags just in case the model forgets
                 text = chunk.content.replace('#', '')
                 yield text
         except Exception as e:

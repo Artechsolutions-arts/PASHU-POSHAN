@@ -5,6 +5,7 @@ import io
 import pandas as pd
 import sys
 import os
+import numpy as np
 
 # Ensure local imports work in development and production
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,15 +24,33 @@ def get_dashboard_data():
         demand_df = pd.read_csv(get_data_path("district_fodder_demand.csv")).fillna(0)
         mandal_df = pd.read_csv(get_data_path("mandal_fodder_demand.csv")).fillna(0)
         
+        # Simple Forecast Logic: Project current totals over 6 months with slight variance
+        total_s = gap_df['Total_Fodder_Tons'].sum()
+        total_d = gap_df['Total_Demand_Tons'].sum()
+        
+        months = ["Current", "Month 2", "Month 3", "Month 4", "Month 5", "Month 6"]
+        forecast_supply = [total_s]
+        forecast_demand = [total_d]
+        
+        # Assume slight supply drop (seasonal) and demand increase
+        for i in range(1, 6):
+            forecast_supply.append(forecast_supply[-1] * (0.98 + np.random.uniform(-0.02, 0.01)))
+            forecast_demand.append(forecast_demand[-1] * (1.01 + np.random.uniform(0, 0.005)))
+
         return {
             "gap": gap_df.to_dict(orient='records'),
             "supply": supply_df.to_dict(orient='records'),
             "demand": demand_df.to_dict(orient='records'),
-            "mandal": mandal_df.to_dict(orient='records')
+            "mandal": mandal_df.to_dict(orient='records'),
+            "forecast": {
+                "labels": months,
+                "supply": [round(x) for x in forecast_supply],
+                "demand": [round(x) for x in forecast_demand]
+            }
         }
     except Exception as e:
         print(f"Data Error: {e}")
-        return {"gap": [], "supply": [], "demand": [], "mandal": []}
+        return {"gap": [], "supply": [], "demand": [], "mandal": [], "forecast": {}}
 
 class ChatRequest(BaseModel):
     message: str
@@ -43,7 +62,6 @@ async def get_data_endpoint():
 @app.post("/api/chat")
 async def chat_endpoint(req: ChatRequest):
     try:
-        # Check if there's custom data "cached" in a temp file or session
         custom_context = None
         if os.path.exists("temp_upload.csv"):
             try:
@@ -66,10 +84,7 @@ async def upload_endpoint(file: UploadFile = File(...)):
             df = pd.read_excel(io.BytesIO(contents))
         
         if df is not None:
-            # Save for AI context (Local file approach for persistence in this stateless-ish setup)
             df.to_csv("temp_upload.csv", index=False)
-            
-            # Generate a quick analysis summary for the UI
             summary = {
                 "rows": len(df),
                 "cols": list(df.columns),
@@ -82,11 +97,8 @@ async def upload_endpoint(file: UploadFile = File(...)):
 
 @app.get("/")
 async def root():
-    # We will serve the High-Authority UI directly here for Vercel simplicity
-    # Use absolute path for index.html as well
     index_path = get_data_path("index.html")
     with open(index_path, "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
 
-# For Vercel, the app instance must be named 'app'
 app_instance = app 
