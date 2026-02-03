@@ -19,6 +19,14 @@
    ```
 3. Follow the prompts (Keep all default settings).
 
+## Option 3: Using Railway (Best for Always-On)
+1. Push this code to **GitHub**.
+2. Go to [Railway.app](https://railway.app) and "Start a New Project".
+3. Select **"Deploy from GitHub repo"**.
+4. Choose your repository.
+5. Railway will detect the `Procfile` and deploy automatically.
+   - **Note:** If asked for a start command, use: `uvicorn api.index:app --host 0.0.0.0 --port $PORT`
+
 ## Important Notes
 - **AI Features:** The cloud deployment uses a "Safe Mode" AI because heavy LLMs (Ollama) cannot run on Vercel's free tier. The fallback engine uses pre-calculated insights which is faster and more reliable for web users.
 - **Data:** All CSV files in the root folder are automatically included.
