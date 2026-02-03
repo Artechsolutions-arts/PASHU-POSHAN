@@ -128,6 +128,20 @@ def get_local_response(prompt, df, custom_context=None):
         content += f"- Food they have: {fmt(row['Total_Fodder_Tons'])}\n"
         content += f"- Food they need: {fmt(row['Total_Demand_Tons'])}\n"
         content += f"- The Gap: {fmt(row['Balance_Tons'])}\n\n"
+        
+        # Risk Logic Upgrade
+        if any(w in clean_q for w in ["RISK", "CRITERIA", "VULNERABILITY", "DANGER"]):
+            supply = row['Total_Fodder_Tons']
+            demand = row['Total_Demand_Tons']
+            deficit_pct = ((supply - demand) / demand) * 100 if demand > 0 else 0
+            
+            risk_level = "SAFE"
+            if deficit_pct < -50: risk_level = "CRITICAL (High Risk)"
+            elif deficit_pct < -20: risk_level = "MODERATE"
+            elif deficit_pct < 0: risk_level = "LOW"
+            
+            content += f"⚠️ RISK ASSESSMENT:\nCurrent Risk Level: **{risk_level}**\nThis district has a deficit of {abs(deficit_pct):.1f}%. Any deficit over 20% is considered stressful for livestock.\n\n"
+
         content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
         return header + content + footer
 
