@@ -76,16 +76,10 @@ def get_local_response(prompt, df, custom_context=None):
 
     footer = f"\n---\n*Based on {ASSUMPTIONS['lineage']} records.*"
     
-    if any(word in clean_q for word in ["STATE", "OVERVIEW", "SUMMARY", "TOTAL"]):
-        total_s = df['Total_Fodder_Tons'].sum() if df is not None else 0
-        total_d = df['Total_Demand_Tons'].sum() if df is not None else 0
-        net = total_s - total_d
-        
-        content = f"SUMMARY:\nAcross the whole state, we have about **{fmt(total_s)}** of food available for our animals.\n\n"
-        content += f"THE NUMBERS:\n- Food Available: {fmt(total_s)}\n- Food Needed: {fmt(total_d)}\n- Current Balance: {fmt(net)} {'Surplus' if net > 0 else 'Shortage'}\n\n"
-        content += f"WHAT THIS MEANS:\nRight now, the state has **{('enough' if net > 0 else 'not enough')}** food to meet everyone's needs. We should look at moving some food from surplus areas to those that are short."
-        return header + content + footer
-
+    # Expanded keyword list for general queries
+    general_keywords = ["STATE", "OVERVIEW", "SUMMARY", "TOTAL", "STATUS", "SITUATION", "ANALYSIS", "REPORT", "FODDER", "GAP", "SUPPLY", "DEMAND", "HELP", "HELLO", "HI", "WHAT"]
+    
+    # Check for specific District names first (Priority)
     for _, row in df.iterrows():
         d_name = str(row['District']).upper().replace(" ", "")
         if d_name in clean_q.replace(" ", ""):
@@ -98,7 +92,17 @@ def get_local_response(prompt, df, custom_context=None):
             content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
             return header + content + footer
 
-    return "READY TO HELP:\nYou can ask about a specific District or a State Summary. I'll keep it simple!"
+    # If no district is found, or if a general keyword is present (or as a default fallback), show State Summary
+    # This ensures the bot ALWAYS answers with data instead of being silent.
+    total_s = df['Total_Fodder_Tons'].sum() if df is not None else 0
+    total_d = df['Total_Demand_Tons'].sum() if df is not None else 0
+    net = total_s - total_d
+    
+    content = f"STATEWIDE SUMMARY:\n(I didn't hear a specific district, so here is the big picture)\n\n"
+    content += f"Across Andhra Pradesh, we have about **{fmt(total_s)}** of food available.\n\n"
+    content += f"THE NUMBERS:\n- Food Available: {fmt(total_s)}\n- Food Needed: {fmt(total_d)}\n- Current Balance: {fmt(net)} {'Surplus' if net > 0 else 'Shortage'}\n\n"
+    content += f"QUICK TIP:\nYou can ask me about a specific district like 'Anantapur' or 'Chittoor' to see how they are doing!"
+    return header + content + footer
 
 def get_ai_response_stream(prompt, custom_context=None):
     try:
