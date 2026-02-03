@@ -63,6 +63,44 @@ def get_local_response(prompt, df, custom_context=None):
     clean_q = prompt.upper()
     header = "HELLO! HERE IS YOUR SIMPLE REPORT\n\n"
     
+    # Common Typos / Aliases Mapping
+    TYPO_MAP = {
+        "CHITOOR": "CHITTOOR",
+        "KADAPA": "KADAPA",
+        "YSR": "KADAPA",
+        "ANANTAPURAM": "ANANTAPUR",
+        "ANANTAPURAMU": "ANANTAPUR",
+        "VIZAG": "VISAKHAPATNAM",
+        "EAST GODAVARI": "EAST GODAVARI",
+        "WEST GODAVARI": "WEST GODAVARI",
+        "GODAVARI": "WEST GODAVARI", # Default to West if ambiguous
+        "EG": "EAST GODAVARI",
+        "WG": "WEST GODAVARI",
+        "ASR": "ALLURI SITARAMA RAJU",
+        "ALLURI": "ALLURI SITARAMA RAJU",
+        "NTR": "NTR",
+        "KONASEEMA": "DR B.R. AMBEDKAR KONASEEMA"
+    }
+
+    def match_district_fuzzy(query, district_list):
+        """Tries to find the best matching district from the query."""
+        q_clean = query.replace(" ", "").upper()
+        
+        # 1. Check Typo Map
+        for typo, correct in TYPO_MAP.items():
+            if typo in query.upper(): # check strict word in original query
+                 return correct
+        
+        # 2. Check Standard List
+        for d in district_list:
+            d_clean = d.upper().replace(" ", "").replace(".", "")
+            if d_clean in q_clean:
+                return d
+            # Reverse check (if query is part of district name, e.g. "ALLURI" in "ALLURI SITARAMA RAJU")
+            if q_clean in d_clean and len(q_clean) > 4:
+                return d
+        return None
+        
     def fmt(n):
         try:
             val = float(n)
@@ -80,29 +118,28 @@ def get_local_response(prompt, df, custom_context=None):
     general_keywords = ["STATE", "OVERVIEW", "SUMMARY", "TOTAL", "STATUS", "SITUATION", "ANALYSIS", "REPORT", "FODDER", "GAP", "SUPPLY", "DEMAND", "HELP", "HELLO", "HI", "WHAT"]
     
     # Check for specific District names first (Priority)
-    for _, row in df.iterrows():
-        d_name = str(row['District']).upper().replace(" ", "")
-        if d_name in clean_q.replace(" ", ""):
-            status = row['Status']
-            content = f"DISTRICT REPORT: {row['District'].upper()}\n\n"
-            content += f"How is it looking? {status}\n"
-            content += f"- Food they have: {fmt(row['Total_Fodder_Tons'])}\n"
-            content += f"- Food they need: {fmt(row['Total_Demand_Tons'])}\n"
-            content += f"- The Gap: {fmt(row['Balance_Tons'])}\n\n"
-            content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
-            return header + content + footer
+    matched_dist_name = match_district_fuzzy(prompt, df['District'].unique())
+    if matched_dist_name and not any(k in clean_q for k in general_keywords): # Prioritize specific district over general unless explicitly general
+        row = df[df['District'] == matched_dist_name].iloc[0]
+        status = row['Status']
+        content = f"DISTRICT REPORT: {row['District'].upper()}\n\n"
+        content += f"How is it looking? {status}\n"
+        content += f"- Food they have: {fmt(row['Total_Fodder_Tons'])}\n"
+        content += f"- Food they need: {fmt(row['Total_Demand_Tons'])}\n"
+        content += f"- The Gap: {fmt(row['Balance_Tons'])}\n\n"
+        content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
+        return header + content + footer
 
     # --- PREDICTION LOGIC (NEW) ---
     # Check if user wants a forecast for a specific district
     if any(x in clean_q for x in ["PREDICT", "FUTURE", "FORECAST", "NEXT", "OUTLOOK"]):
-        found_district = None
-        for _, row in df.iterrows():
-            d_name = str(row['District']).upper().replace(" ", "")
-            if d_name in clean_q.replace(" ", ""):
-                found_district = row
-                break
         
-        if found_district is not None:
+        # Reuse smart match logic
+        found_name = match_district_fuzzy(prompt, df['District'].unique())
+        
+        if found_name:
+            found_district = df[df['District'] == found_name].iloc[0]
+            
             # Simulate a 6-month projection
             monthly_burn = found_district['Total_Demand_Tons'] / 12
             current_stock = found_district['Total_Fodder_Tons']
