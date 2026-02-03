@@ -118,8 +118,9 @@ def get_local_response(prompt, df, custom_context=None):
     general_keywords = ["STATE", "OVERVIEW", "SUMMARY", "TOTAL", "STATUS", "SITUATION", "ANALYSIS", "REPORT", "FODDER", "GAP", "SUPPLY", "DEMAND", "HELP", "HELLO", "HI", "WHAT"]
     
     # Check for specific District names first (Priority)
+    # Check for specific District names first (Priority)
     matched_dist_name = match_district_fuzzy(prompt, df['District'].unique())
-    if matched_dist_name and not any(k in clean_q for k in general_keywords): # Prioritize specific district over general unless explicitly general
+    if matched_dist_name: # Always prioritize district if found
         row = df[df['District'] == matched_dist_name].iloc[0]
         status = row['Status']
         content = f"DISTRICT REPORT: {row['District'].upper()}\n\n"
