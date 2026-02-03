@@ -92,6 +92,27 @@ def get_local_response(prompt, df, custom_context=None):
             content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
             return header + content + footer
 
+    # --- SUPERLATIVE LOGIC (NEW) ---
+    # 1. Highest Supply
+    if any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX"]) and any(x in clean_q for x in ["SUPPLY", "FODDER", "AVAILABLE"]):
+        top = df.sort_values('Total_Fodder_Tons', ascending=False).iloc[0]
+        return header + f"TOP PERFORMER: {top['District'].upper()}\n\nThis district has the highest fodder supply in the state!\n\n- Supply: **{fmt(top['Total_Fodder_Tons'])}**\n- Demand: {fmt(top['Total_Demand_Tons'])}\n" + footer
+
+    # 2. Highest Demand
+    if any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX"]) and any(x in clean_q for x in ["DEMAND", "NEED", "REQUIRE"]):
+        top = df.sort_values('Total_Demand_Tons', ascending=False).iloc[0]
+        return header + f"HIGHEST DEMAND: {top['District'].upper()}\n\nThis district needs the most food for its livestock.\n\n- Total Needed: **{fmt(top['Total_Demand_Tons'])}**\n- Available: {fmt(top['Total_Fodder_Tons'])}\n" + footer
+
+    # 3. Best Surplus
+    if "SURPLUS" in clean_q and any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "BEST"]):
+        top = df.sort_values('Balance_Tons', ascending=False).iloc[0]
+        return header + f"MOST SECURE: {top['District'].upper()}\n\nThey have the largest safety margin.\n\n- Surplus: **{fmt(top['Balance_Tons'])}**\n" + footer
+
+    # 4. Worst Deficit/Shortage
+    if any(x in clean_q for x in ["DEFICIT", "SHORTAGE", "POOR", "WORST", "LOW", "LEAST"]):
+        bot = df.sort_values('Balance_Tons', ascending=True).iloc[0]
+        return header + f"CRITICAL ALERT: {bot['District'].upper()}\n\nThis district has the most severe shortage.\n\n- Shortage Gap: **{fmt(bot['Balance_Tons'])}**\n- Immediate attention required.\n" + footer
+
     # If no district is found, or if a general keyword is present (or as a default fallback), show State Summary
     # This ensures the bot ALWAYS answers with data instead of being silent.
     total_s = df['Total_Fodder_Tons'].sum() if df is not None else 0
