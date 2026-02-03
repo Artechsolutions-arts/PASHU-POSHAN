@@ -74,7 +74,7 @@ def get_local_response(prompt, df, custom_context=None):
     if custom_context and any(word in clean_q for word in ["CUSTOM", "UPLOAD", "NEW", "PREDICT"]):
         return header + "NEW DATA FOUND:\nI see you uploaded some new data! My brain is currently in 'Safe Mode' so I can't do deep math on it yet, but I've saved it and it's ready for looking at."
 
-    footer = f"\n---\n*Based on {ASSUMPTIONS['lineage']} records.*"
+    footer = f"\n---\n*Source: {ASSUMPTIONS['lineage']}*"
     
     # Expanded keyword list for general queries
     general_keywords = ["STATE", "OVERVIEW", "SUMMARY", "TOTAL", "STATUS", "SITUATION", "ANALYSIS", "REPORT", "FODDER", "GAP", "SUPPLY", "DEMAND", "HELP", "HELLO", "HI", "WHAT"]
@@ -152,7 +152,7 @@ def get_ai_response_stream(prompt, custom_context=None):
                 text = chunk.content.replace('#', '')
                 yield text
         except Exception as e:
-            yield f"(Using backup engine) "
+            # yield f"(Using backup engine) " # Hiding internal details from user
             yield get_local_response(prompt, df_gap, custom_context)
     else:
         yield get_local_response(prompt, df_gap, custom_context)
