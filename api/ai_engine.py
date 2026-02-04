@@ -115,7 +115,7 @@ def get_local_response(prompt, df, custom_context=None):
     footer = f"\n---\n*Source: {ASSUMPTIONS['lineage']}*"
     
     # Expanded keyword list for general queries
-    general_keywords = ["STATE", "OVERVIEW", "SUMMARY", "TOTAL", "STATUS", "SITUATION", "ANALYSIS", "REPORT", "FODDER", "GAP", "SUPPLY", "DEMAND", "HELP", "HELLO", "HI", "WHAT"]
+    general_keywords = ["STATE", "OVERVIEW", "SUMMARY", "TOTAL", "STATUS", "SITUATION", "ANALYSIS", "REPORT", "FODDER", "GAP", "SUPPLY", "DEMAND", "HELP", "HELLO", "HI", "WHAT", "WHICH", "FOOD", "AVAILABLE", "MORE", "LESS"]
     
     # Check for specific District names first (Priority)
     # Check for specific District names first (Priority)
@@ -179,8 +179,8 @@ def get_local_response(prompt, df, custom_context=None):
             return header + p_content + footer
 
     # --- SUPERLATIVE LOGIC (NEW) ---
-    # 1. Highest Supply
-    if any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX"]) and any(x in clean_q for x in ["SUPPLY", "FODDER", "AVAILABLE"]):
+    # 1. Highest Supply (Food Available)
+    if any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX", "MORE", "GREATER"]) and any(x in clean_q for x in ["SUPPLY", "FODDER", "AVAILABLE", "FOOD"]):
         top = df.sort_values('Total_Fodder_Tons', ascending=False).iloc[0]
         return header + f"TOP PERFORMER: {top['District'].upper()}\n\nThis district has the highest fodder supply in the state!\n\n- Supply: **{fmt(top['Total_Fodder_Tons'])}**\n- Demand: {fmt(top['Total_Demand_Tons'])}\n" + footer
 
