@@ -178,26 +178,46 @@ def get_local_response(prompt, df, custom_context=None):
                 
             return header + p_content + footer
 
-    # --- SUPERLATIVE LOGIC (NEW) ---
+    # --- ORDINAL & SUPERLATIVE LOGIC ---
+    ORDINAL_MAP = {
+        "FIRST": 0, "1ST": 0, "SECOND": 1, "2ND": 1, "THIRD": 2, "3RD": 2,
+        "FOURTH": 3, "4TH": 3, "FIFTH": 4, "5TH": 4
+    }
+    rank_idx = 0
+    rank_label = "TOP"
+    for word, i in ORDINAL_MAP.items():
+        if word in clean_q:
+            rank_idx = i
+            rank_label = f"{word}"
+            break
+
     # 1. Highest Supply (Food Available)
     if any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX", "MORE", "GREATER"]) and any(x in clean_q for x in ["SUPPLY", "FODDER", "AVAILABLE", "FOOD"]):
-        top = df.sort_values('Total_Fodder_Tons', ascending=False).iloc[0]
-        return header + f"TOP PERFORMER: {top['District'].upper()}\n\nThis district has the highest fodder supply in the state!\n\n- Supply: **{fmt(top['Total_Fodder_Tons'])}**\n- Demand: {fmt(top['Total_Demand_Tons'])}\n" + footer
+        sorted_df = df.sort_values('Total_Fodder_Tons', ascending=False)
+        if rank_idx < len(sorted_df):
+            row = sorted_df.iloc[rank_idx]
+            return header + f"{rank_label} PERFORMER: {row['District'].upper()}\n\nThis district is ranked #{rank_idx+1} in fodder supply statewide.\n\n- Supply: **{fmt(row['Total_Fodder_Tons'])}**\n- Demand: {fmt(row['Total_Demand_Tons'])}\n" + footer
 
     # 2. Highest Demand
     if any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX"]) and any(x in clean_q for x in ["DEMAND", "NEED", "REQUIRE"]):
-        top = df.sort_values('Total_Demand_Tons', ascending=False).iloc[0]
-        return header + f"HIGHEST DEMAND: {top['District'].upper()}\n\nThis district needs the most food for its livestock.\n\n- Total Needed: **{fmt(top['Total_Demand_Tons'])}**\n- Available: {fmt(top['Total_Fodder_Tons'])}\n" + footer
+        sorted_df = df.sort_values('Total_Demand_Tons', ascending=False)
+        if rank_idx < len(sorted_df):
+            row = sorted_df.iloc[rank_idx]
+            return header + f"{rank_label} DEMAND: {row['District'].upper()}\n\nThis district is ranked #{rank_idx+1} in total fodder requirement.\n\n- Total Needed: **{fmt(row['Total_Demand_Tons'])}**\n- Available: {fmt(row['Total_Fodder_Tons'])}\n" + footer
 
     # 3. Best Surplus
     if "SURPLUS" in clean_q and any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "BEST"]):
-        top = df.sort_values('Balance_Tons', ascending=False).iloc[0]
-        return header + f"MOST SECURE: {top['District'].upper()}\n\nThey have the largest safety margin.\n\n- Surplus: **{fmt(top['Balance_Tons'])}**\n" + footer
+        sorted_df = df.sort_values('Balance_Tons', ascending=False)
+        if rank_idx < len(sorted_df):
+            row = sorted_df.iloc[rank_idx]
+            return header + f"{rank_label} SURPLUS: {row['District'].upper()}\n\nRanked #{rank_idx+1} for safety margin.\n\n- Surplus: **{fmt(row['Balance_Tons'])}**\n" + footer
 
     # 4. Worst Deficit/Shortage
     if any(x in clean_q for x in ["DEFICIT", "SHORTAGE", "POOR", "WORST", "LOW", "LEAST"]):
-        bot = df.sort_values('Balance_Tons', ascending=True).iloc[0]
-        return header + f"CRITICAL ALERT: {bot['District'].upper()}\n\nThis district has the most severe shortage.\n\n- Shortage Gap: **{fmt(bot['Balance_Tons'])}**\n- Immediate attention required.\n" + footer
+        sorted_df = df.sort_values('Balance_Tons', ascending=True)
+        if rank_idx < len(sorted_df):
+            row = sorted_df.iloc[rank_idx]
+            return header + f"{rank_label} CRITICAL ALERT: {row['District'].upper()}\n\nThis district is ranked #{rank_idx+1} in terms of resource gap.\n\n- Shortage Gap: **{fmt(row['Balance_Tons'])}**\n- Rank: {rank_label} most severe shortage.\n" + footer
 
     # --- KNOWLEDGE BASE (NEW) ---
     KNOWLEDGE_BASE = {
