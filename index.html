@@ -33,9 +33,6 @@
             top: 0;
             z-index: 50;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
         }
 
         .main-content {
@@ -238,371 +235,482 @@
 
 <body>
     <!-- SIDEBAR -->
-    <div class="sidebar govt-navy text-white flex flex-col" id="sidebar">
-        <!-- Logo Section -->
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-10 border-b border-slate-700 pb-6">
-                <div class="text-center w-full">
-                    <h1 class="text-2xl font-black tracking-tight">FORAGE</h1>
-                    <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-[0.2em]">pashuposhana</p>
-                </div>
-                <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                <button onclick="toggleSidebar()"
-                    class="hidden lg:block absolute -right-4 top-10 bg-blue-600 p-1.5 rounded-full shadow-xl hover:bg-blue-500 transition border-4 border-slate-50">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
+    <div class="sidebar govt-navy text-white p-6" id="sidebar">
+        <div class="flex justify-between items-center mb-10 border-b border-slate-700 pb-6">
+            <div class="text-center w-full">
+                <h1 class="text-2xl font-black tracking-tight">FORAGE</h1>
+                <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-[0.2em]">pashuposhana</p>
             </div>
-
-            <!-- ACTION CENTRE TOP -->
-            <div class="mb-6 px-6">
-                <div class="space-y-2">
-                    <button onclick="document.getElementById('chat-upload').click()"
-                        class="w-full bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold py-3 rounded-lg flex items-center justify-center transition shadow-lg whitespace-nowrap">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
-                        </svg>
-                        UPLOAD DATASET
-                    </button>
-                    <button onclick="exportCSV()"
-                        class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold py-3 rounded-lg flex items-center justify-center transition border border-slate-700 whitespace-nowrap">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        EXPORT REPORT
-                    </button>
-                </div>
-            </div>
-
-            <!-- Navigation Section -->
-            <nav class="flex-1 overflow-y-auto px-4 space-y-1 custom-scrollbar" id="sidebar-nav">
-                <button onclick="switchView('overview')" data-view="overview"
-                    class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition nav-active group whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 114 0v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Executive Overview
-                </button>
-                <button onclick="switchView('supply')" data-view="supply"
-                    class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    Supply Profile
-                </button>
-                <button onclick="switchView('demand')" data-view="demand"
-                    class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Demand Dynamics
-                </button>
-                <button onclick="switchView('risk')" data-view="risk"
-                    class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 17c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    Risk & Vulnerability
-                </button>
-                <button onclick="switchView('predict')" data-view="predict"
-                    class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group border-t border-slate-700 mt-2 pt-2 whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 text-blue-400" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                    Future Predictions
-                </button>
-            </nav>
-
-            <!-- Footer Section -->
-            <div class="p-6 mt-auto text-[10px] text-slate-500 font-mono border-t border-slate-800">
-                <p>BUILD: 2026.01.28-V9</p>
-                <p>© DEPT. OF ANIMAL HUSBANDRY</p>
-            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <button onclick="toggleSidebar()"
+                class="hidden lg:block absolute -right-4 top-10 bg-blue-600 p-1.5 rounded-full shadow-xl hover:bg-blue-500 transition border-4 border-slate-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
         </div>
 
-        <!-- MAIN -->
-        <div class="main-content min-h-screen" id="main-content">
-            <header
-                class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-40">
-                <div class="flex items-center">
-                    <button id="sidebar-toggle-open" onclick="toggleSidebar()"
-                        class="mr-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition text-govt-navy">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                    <div>
-                        <h2 class="text-govt-navy text-lg font-bold" id="view-title">Executive Overview</h2>
+        <!-- ACTION CENTRE TOP -->
+        <div class="mb-8 px-2">
+            <div class="space-y-2">
+                <button onclick="document.getElementById('chat-upload').click()"
+                    class="w-full bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold py-3 rounded-lg flex items-center justify-center transition shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
+                    </svg>
+                    UPLOAD DATASET
+                </button>
+                <button onclick="exportCSV()"
+                    class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold py-3 rounded-lg flex items-center justify-center transition border border-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    EXPORT REPORT
+                </button>
+            </div>
+        </div>
+        <nav class="space-y-1" id="sidebar-nav">
+            <button onclick="switchView('overview')" data-view="overview"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition nav-active group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 114 0v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Executive Overview
+            </button>
+            <button onclick="switchView('supply')" data-view="supply"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Supply Profile
+            </button>
+            <button onclick="switchView('demand')" data-view="demand"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Demand Dynamics
+            </button>
+            <button onclick="switchView('risk')" data-view="risk"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-3 text-slate-500 group-hover:text-blue-400 transition" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 17c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Risk & Vulnerability
+            </button>
+            <button onclick="switchView('predict')" data-view="predict"
+                class="w-full text-left flex items-center px-4 py-3 rounded-lg font-semibold text-slate-400 hover:text-white transition group border-t border-slate-700 mt-2 pt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 text-blue-400" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                Future Predictions
+            </button>
+        </nav>
+
+        <div class="absolute bottom-10 left-6 text-[10px] text-slate-500 font-mono">
+            <p>BUILD: 2026.01.28-V9</p>
+            <p>© DEPT. OF ANIMAL HUSBANDRY</p>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content min-h-screen" id="main-content">
+        <header
+            class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-40">
+            <div class="flex items-center">
+                <button id="sidebar-toggle-open" onclick="toggleSidebar()"
+                    class="mr-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition text-govt-navy">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <div>
+                    <h2 class="text-govt-navy text-lg font-bold" id="view-title">Executive Overview</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                            Live System Sync <span class="mx-1 text-slate-300">|</span> <span id="live-clock"
+                                class="font-mono text-slate-500">--</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Region Selector:</label>
+                <select id="district-filter" onchange="handleFilterChange()"
+                    class="bg-slate-100 text-xs font-bold rounded-md px-4 py-2 outline-none border-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all">ANDHRA PRADESH (STATE)</option>
+                </select>
+                <button onclick="exportCSV()"
+                    class="border border-slate-200 text-govt-navy text-[10px] font-bold px-4 py-2 rounded-md hover:bg-slate-50 transition shadow-sm">EXPORT
+                    DATA</button>
+            </div>
+        </header>
+
+        <main class="p-6">
+            <!-- Global KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="kpi-card border-l-blue-600 shadow-sm bg-blue-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Gross Fodder Supply
+                    </p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-bold text-govt-navy" id="kpi-supply">--</h3><span
+                            class="ml-1 text-[9px] font-bold text-slate-400">Tons</span>
+                    </div>
+                </div>
+                <div class="kpi-card border-l-slate-400 shadow-sm bg-slate-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Total Dry Matter
+                        Demand</p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-bold text-govt-navy" id="kpi-demand">--</h3><span
+                            class="ml-1 text-[9px] font-bold text-slate-400">Tons</span>
+                    </div>
+                </div>
+                <div class="kpi-card border-l-rose-500 shadow-sm bg-rose-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Consolidated Net Gap
+                    </p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-bold text-rose-700" id="kpi-gap">--</h3><span
+                            class="ml-1 text-[9px] font-bold text-rose-400">Tons</span>
+                    </div>
+                </div>
+                <div class="kpi-card border-l-emerald-500 shadow-sm bg-emerald-low">
+                    <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Sufficiency Index</p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-2xl font-bold text-emerald-700" id="kpi-percent">--%</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Sections -->
+            <div id="view-overview" class="view-section">
+                <div id="ov-chart-card" class="bg-white p-6 border border-slate-200 rounded-xl shadow-sm mb-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="text-sm font-bold text-govt-navy uppercase tracking-wider">District-wise Supply vs
+                            Demand Comparison</h4>
                         <div class="flex items-center space-x-2">
-                            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                Live System Sync <span class="mx-1 text-slate-300">|</span> <span id="live-clock"
-                                    class="font-mono text-slate-500">--</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Region Selector:</label>
-                    <select id="district-filter" onchange="handleFilterChange()"
-                        class="bg-slate-100 text-xs font-bold rounded-md px-4 py-2 outline-none border-none focus:ring-2 focus:ring-blue-500">
-                        <option value="all">ANDHRA PRADESH (STATE)</option>
-                    </select>
-                    <button onclick="exportCSV()"
-                        class="border border-slate-200 text-govt-navy text-[10px] font-bold px-4 py-2 rounded-md hover:bg-slate-50 transition shadow-sm">EXPORT
-                        DATA</button>
-                </div>
-            </header>
-
-            <main class="p-6">
-                <!-- Global KPIs -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <div class="kpi-card border-l-blue-600 shadow-sm bg-blue-low">
-                        <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Gross Fodder
-                            Supply
-                        </p>
-                        <div class="flex items-baseline">
-                            <h3 class="text-2xl font-bold text-govt-navy" id="kpi-supply">--</h3><span
-                                class="ml-1 text-[9px] font-bold text-slate-400">Tons</span>
-                        </div>
-                    </div>
-                    <div class="kpi-card border-l-slate-400 shadow-sm bg-slate-low">
-                        <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Total Dry Matter
-                            Demand</p>
-                        <div class="flex items-baseline">
-                            <h3 class="text-2xl font-bold text-govt-navy" id="kpi-demand">--</h3><span
-                                class="ml-1 text-[9px] font-bold text-slate-400">Tons</span>
-                        </div>
-                    </div>
-                    <div class="kpi-card border-l-rose-500 shadow-sm bg-rose-low">
-                        <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Consolidated Net
-                            Gap
-                        </p>
-                        <div class="flex items-baseline">
-                            <h3 class="text-2xl font-bold text-rose-700" id="kpi-gap">--</h3><span
-                                class="ml-1 text-[9px] font-bold text-rose-400">Tons</span>
-                        </div>
-                    </div>
-                    <div class="kpi-card border-l-emerald-500 shadow-sm bg-emerald-low">
-                        <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">Sufficiency Index
-                        </p>
-                        <div class="flex items-baseline">
-                            <h3 class="text-2xl font-bold text-emerald-700" id="kpi-percent">--%</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- View Sections -->
-                <div id="view-overview" class="view-section">
-                    <div id="ov-chart-card" class="bg-white p-6 border border-slate-200 rounded-xl shadow-sm mb-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h4 class="text-sm font-bold text-govt-navy uppercase tracking-wider">District-wise Supply
-                                vs
-                                Demand Comparison</h4>
-                            <div class="flex items-center space-x-2">
-                                <div class="flex space-x-4 text-[10px] font-bold text-slate-400 mr-4">
-                                    <span class="flex items-center"><span
-                                            class="w-3 h-3 bg-yellow-400 mr-1 rounded-sm"></span>
-                                        SUPPLY</span>
-                                    <span class="flex items-center"><span
-                                            class="w-3 h-3 bg-red-500 mr-1 rounded-sm"></span>
-                                        DEMAND</span>
-                                </div>
-                                <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                    <button onclick="zoomChart('ov', 1.1)"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Zoom In"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                                        </svg></button>
-                                    <button onclick="zoomChart('ov', 0.9)"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Zoom Out"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
-                                        </svg></button>
-                                    <button onclick="toggleFullScreen('ov-chart-card')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                        </svg></button>
-                                    <button onclick="downloadCanvas('ov-chart', 'supply_vs_demand')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg></button>
-                                </div>
+                            <div class="flex space-x-4 text-[10px] font-bold text-slate-400 mr-4">
+                                <span class="flex items-center"><span
+                                        class="w-3 h-3 bg-yellow-400 mr-1 rounded-sm"></span>
+                                    SUPPLY</span>
+                                <span class="flex items-center"><span class="w-3 h-3 bg-red-500 mr-1 rounded-sm"></span>
+                                    DEMAND</span>
                             </div>
-                        </div>
-                        <canvas id="ov-chart" height="280"></canvas>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-                        <div id="ov-table-card"
-                            class="lg:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                            <div
-                                class="bg-slate-50 px-6 py-4 flex justify-between items-center border-b border-slate-200">
-                                <h4 class="text-xs font-bold text-govt-navy uppercase">District Register</h4>
-                                <div
-                                    class="flex items-center bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
-                                    <button onclick="toggleFullScreen('ov-table-card')"
-                                        class="p-1 hover:bg-slate-50 rounded transition text-slate-500"
-                                        title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                        </svg></button>
-                                    <button onclick="exportCSV()"
-                                        class="p-1 hover:bg-slate-50 rounded transition text-slate-500"
-                                        title="Export CSV"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg></button>
-                                </div>
-                            </div>
-                            <div class="max-h-96 overflow-y-auto">
-                                <table class="w-full text-left text-[11px]">
-                                    <thead
-                                        class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
-                                        <tr>
-                                            <th class="px-6 py-4">District</th>
-                                            <th class="px-6 py-4 text-right">Supply (T)</th>
-                                            <th class="px-6 py-4 text-right">Demand (T)</th>
-                                            <th class="px-6 py-4 text-right">Balance (T)</th>
-                                            <th class="px-6 py-4 text-center">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="ov-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div id="ov-pie-card"
-                            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-4">
-                                <h4 class="text-xs font-bold text-govt-navy uppercase">State Distribution</h4>
-                                <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                    <button onclick="toggleFullScreen('ov-pie-card')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                        </svg></button>
-                                    <button onclick="downloadCanvas('ov-pie', 'state_distribution')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg></button>
-                                </div>
-                            </div>
-                            <canvas id="ov-pie" height="180"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-supply" class="view-section hidden">
-                    <div id="sp-sunburst-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-sm font-bold text-govt-navy uppercase">Hierarchical Crop Distribution
-                                (Sunburst)
-                            </h4>
                             <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                <button onclick="toggleFullScreen('sp-sunburst-card')"
+                                <button onclick="zoomChart('ov', 1.1)"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500" title="Zoom In"><svg
+                                        xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                    </svg></button>
+                                <button onclick="zoomChart('ov', 0.9)"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500" title="Zoom Out"><svg
+                                        xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                    </svg></button>
+                                <button onclick="toggleFullScreen('ov-chart-card')"
                                     class="p-1 hover:bg-white rounded transition text-slate-500"
                                     title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                                     </svg></button>
+                                <button onclick="downloadCanvas('ov-chart', 'supply_vs_demand')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg></button>
                             </div>
                         </div>
-                        <div id="sp-sunburst" class="w-full h-[400px]"></div>
                     </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        <div id="sp-pie-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-sm font-bold text-govt-navy uppercase">Biomass Composition</h4>
-                                <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                    <button onclick="toggleFullScreen('sp-pie-card')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                        </svg></button>
-                                    <button onclick="downloadCanvas('sp-pie', 'biomass_composition')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg></button>
-                                </div>
+                    <canvas id="ov-chart" height="280"></canvas>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                    <div id="ov-table-card"
+                        class="lg:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 px-6 py-4 flex justify-between items-center border-b border-slate-200">
+                            <h4 class="text-xs font-bold text-govt-navy uppercase">District Register</h4>
+                            <div class="flex items-center bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                                <button onclick="toggleFullScreen('ov-table-card')"
+                                    class="p-1 hover:bg-slate-50 rounded transition text-slate-500"
+                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg></button>
+                                <button onclick="exportCSV()"
+                                    class="p-1 hover:bg-slate-50 rounded transition text-slate-500"
+                                    title="Export CSV"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg></button>
                             </div>
-                            <canvas id="sp-pie" height="300"></canvas>
                         </div>
-                        <div id="sp-bar-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-sm font-bold text-govt-navy uppercase">Supply Intensity</h4>
+                        <div class="max-h-96 overflow-y-auto">
+                            <table class="w-full text-left text-[11px]">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
+                                    <tr>
+                                        <th class="px-6 py-4">District</th>
+                                        <th class="px-6 py-4 text-right">Supply (T)</th>
+                                        <th class="px-6 py-4 text-right">Demand (T)</th>
+                                        <th class="px-6 py-4 text-right">Balance (T)</th>
+                                        <th class="px-6 py-4 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ov-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="ov-pie-card"
+                        class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xs font-bold text-govt-navy uppercase">State Distribution</h4>
+                            <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
+                                <button onclick="toggleFullScreen('ov-pie-card')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg></button>
+                                <button onclick="downloadCanvas('ov-pie', 'state_distribution')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg></button>
+                            </div>
+                        </div>
+                        <canvas id="ov-pie" height="180"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-supply" class="view-section hidden">
+                <div id="sp-sunburst-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-sm font-bold text-govt-navy uppercase">Hierarchical Crop Distribution
+                            (Sunburst)
+                        </h4>
+                        <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
+                            <button onclick="toggleFullScreen('sp-sunburst-card')"
+                                class="p-1 hover:bg-white rounded transition text-slate-500" title="Full Screen"><svg
+                                    xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                </svg></button>
+                        </div>
+                    </div>
+                    <div id="sp-sunburst" class="w-full h-[400px]"></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div id="sp-pie-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-sm font-bold text-govt-navy uppercase">Biomass Composition</h4>
+                            <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
+                                <button onclick="toggleFullScreen('sp-pie-card')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg></button>
+                                <button onclick="downloadCanvas('sp-pie', 'biomass_composition')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg></button>
+                            </div>
+                        </div>
+                        <canvas id="sp-pie" height="300"></canvas>
+                    </div>
+                    <div id="sp-bar-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-sm font-bold text-govt-navy uppercase">Supply Intensity</h4>
+                            <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
+                                <button onclick="zoomChart('spBar', 1.1)"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500" title="Zoom In"><svg
+                                        xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                    </svg></button>
+                                <button onclick="zoomChart('spBar', 0.9)"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500" title="Zoom Out"><svg
+                                        xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                    </svg></button>
+                                <button onclick="toggleFullScreen('sp-bar-card')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg></button>
+                                <button onclick="downloadCanvas('sp-bar', 'supply_intensity')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg></button>
+                            </div>
+                        </div>
+                        <canvas id="sp-bar" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div id="view-demand" class="view-section hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div id="dm-pie-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-sm font-bold text-govt-navy uppercase">Livestock Consumption</h4>
+                            <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
+                                <button onclick="toggleFullScreen('dm-pie-card')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg></button>
+                                <button onclick="downloadCanvas('dm-pie', 'livestock_consumption')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg></button>
+                            </div>
+                        </div>
+                        <canvas id="dm-pie" height="300"></canvas>
+                    </div>
+                    <div id="dm-list-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-sm font-bold text-govt-navy uppercase">Mandal-wise Demand Register</h4>
+                            <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
+                                <button onclick="toggleFullScreen('dm-list-card')"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg></button>
+                                <button onclick="exportCSV()"
+                                    class="p-1 hover:bg-white rounded transition text-slate-500"
+                                    title="Download Data"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg></button>
+                            </div>
+                        </div>
+                        <div id="dm-list" class="space-y-2 h-72 overflow-y-auto custom-scrollbar pr-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-risk" class="view-section hidden">
+                <div class="bg-rose-50 border border-rose-200 p-6 rounded-xl mb-6">
+                    <h4 class="text-rose-900 font-bold text-sm uppercase mb-1">Administrative Priority Alert</h4>
+                    <p class="text-rose-700 text-[11px]">The following districts report a critical resource gap
+                        (index < 85%). Immediate logistical support is recommended.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="risk-grid"></div>
+            </div>
+
+            <div id="view-predict" class="view-section hidden">
+                <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-xl mb-6 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h4 class="text-xl font-bold mb-2">6-Month Fodder Forecast</h4>
+                        <p class="text-indigo-200 text-sm max-w-xl">Our AI system has analyzed current farming
+                            cycles
+                            and animal population trends to predict fodder availability. Monthly projections show a
+                            manageable gap if current surplus is reallocated.</p>
+                    </div>
+                    <div class="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
+                        <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div id="pr-forecast-card"
+                        class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-sm font-bold text-govt-navy uppercase">Future Trends (Simple View)</h4>
+                            <div class="flex items-center space-x-6">
+                                <div class="flex space-x-6 text-[10px] font-bold text-slate-400">
+                                    <span class="flex items-center"><span class="w-3 h-1 bg-blue-500 mr-2"></span> DATA:
+                                        FOOD AVAILABLE</span>
+                                    <span class="flex items-center"><span
+                                            class="w-3 h-1 bg-indigo-300 mr-2 border-dashed"></span>
+                                        PREDICTION: FOOD
+                                        NEEDED</span>
+                                </div>
                                 <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                    <button onclick="zoomChart('spBar', 1.1)"
+                                    <button onclick="zoomChart('predict', 1.1)"
                                         class="p-1 hover:bg-white rounded transition text-slate-500"
                                         title="Zoom In"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                                         </svg></button>
-                                    <button onclick="zoomChart('spBar', 0.9)"
+                                    <button onclick="zoomChart('predict', 0.9)"
                                         class="p-1 hover:bg-white rounded transition text-slate-500"
                                         title="Zoom Out"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
                                         </svg></button>
-                                    <button onclick="toggleFullScreen('sp-bar-card')"
+                                    <button onclick="toggleFullScreen('pr-forecast-card')"
                                         class="p-1 hover:bg-white rounded transition text-slate-500"
                                         title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                                         </svg></button>
-                                    <button onclick="downloadCanvas('sp-bar', 'supply_intensity')"
+                                    <button onclick="downloadCanvas('pr-forecast', 'future_predictions')"
                                         class="p-1 hover:bg-white rounded transition text-slate-500"
                                         title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -611,338 +719,208 @@
                                         </svg></button>
                                 </div>
                             </div>
-                            <canvas id="sp-bar" height="300"></canvas>
+                        </div>
+                        <canvas id="pr-forecast" height="250"></canvas>
+                    </div>
+
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h4 class="text-xs font-bold text-govt-navy uppercase mb-4">Vulnerability Prediction (Next
+                                Quarter)</h4>
+                            <div id="pr-districts" class="space-y-4">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-6 rounded-xl">
+                            <h4 class="text-emerald-900 font-bold text-sm mb-4 uppercase">AI Recommendations</h4>
+                            <ul id="pr-recs" class="space-y-3 text-[11px] text-emerald-800">
+                                <!-- Populated by JS -->
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div id="view-demand" class="view-section hidden">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        <div id="dm-pie-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-sm font-bold text-govt-navy uppercase">Livestock Consumption</h4>
-                                <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                    <button onclick="toggleFullScreen('dm-pie-card')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                        </svg></button>
-                                    <button onclick="downloadCanvas('dm-pie', 'livestock_consumption')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg></button>
-                                </div>
-                            </div>
-                            <canvas id="dm-pie" height="300"></canvas>
+                <!-- Dashboard Glossary -->
+                <div class="mt-8 pt-6 border-t border-slate-100 flex flex-wrap gap-8">
+                    <div class="flex items-start space-x-4">
+                        <div class="mt-1 w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></div>
+                        <div>
+                            <p class="text-[10px] font-black text-govt-navy uppercase tracking-wider mb-1">Surplus
+                                Meaning</p>
+                            <p class="text-[11px] text-slate-500 max-w-xs leading-relaxed">A positive balance where
+                                the
+                                <strong>gross fodder supply</strong> exceeds the nutritional requirements (Dry
+                                Matter
+                                Demand) of the livestock population.
+                            </p>
                         </div>
-                        <div id="dm-list-card" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-sm font-bold text-govt-navy uppercase">Mandal-wise Demand Register</h4>
-                                <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                    <button onclick="toggleFullScreen('dm-list-card')"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                        </svg></button>
-                                    <button onclick="exportCSV()"
-                                        class="p-1 hover:bg-white rounded transition text-slate-500"
-                                        title="Download Data"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg></button>
-                                </div>
-                            </div>
-                            <div id="dm-list" class="space-y-2 h-72 overflow-y-auto custom-scrollbar pr-2"></div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="mt-1 w-3 h-3 rounded-full bg-rose-500 shadow-sm shadow-rose-200"></div>
+                        <div>
+                            <p class="text-[10px] font-black text-govt-navy uppercase tracking-wider mb-1">Deficit
+                                Meaning</p>
+                            <p class="text-[11px] text-slate-500 max-w-xs leading-relaxed">A resource gap where the
+                                <strong>total nutritional demand</strong> of animals exceeds the locally available
+                                supply, indicating a critical need for allocation.
+                            </p>
                         </div>
                     </div>
                 </div>
+            </div>
+        </main>
+    </div>
 
-                <div id="view-risk" class="view-section hidden">
-                    <div class="bg-rose-50 border border-rose-200 p-6 rounded-xl mb-6">
-                        <h4 class="text-rose-900 font-bold text-sm uppercase mb-1">Administrative Priority Alert</h4>
-                        <p class="text-rose-700 text-[11px]">The following districts report a critical resource gap
-                            (index < 85%). Immediate logistical support is recommended.</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="risk-grid"></div>
+    <!-- FLOATING CHATBOT -->
+    <div id="floating-chat-widget">
+        <div id="chat-window">
+            <div class="chat-header">
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider">Pashu Sahayak AI</h3>
+                    <p class="text-[9px] text-slate-400 font-mono">Live Intelligence</p>
                 </div>
-
-                <div id="view-predict" class="view-section hidden">
-                    <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-xl mb-6 relative overflow-hidden">
-                        <div class="relative z-10">
-                            <h4 class="text-xl font-bold mb-2">6-Month Fodder Forecast</h4>
-                            <p class="text-indigo-200 text-sm max-w-xl">Our AI system has analyzed current farming
-                                cycles
-                                and animal population trends to predict fodder availability. Monthly projections show a
-                                manageable gap if current surplus is reallocated.</p>
-                        </div>
-                        <div class="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
-                            <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z">
-                                </path>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                        <div id="pr-forecast-card"
-                            class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-sm font-bold text-govt-navy uppercase">Future Trends (Simple View)</h4>
-                                <div class="flex items-center space-x-6">
-                                    <div class="flex space-x-6 text-[10px] font-bold text-slate-400">
-                                        <span class="flex items-center"><span class="w-3 h-1 bg-blue-500 mr-2"></span>
-                                            DATA:
-                                            FOOD AVAILABLE</span>
-                                        <span class="flex items-center"><span
-                                                class="w-3 h-1 bg-indigo-300 mr-2 border-dashed"></span>
-                                            PREDICTION: FOOD
-                                            NEEDED</span>
-                                    </div>
-                                    <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                        <button onclick="zoomChart('predict', 1.1)"
-                                            class="p-1 hover:bg-white rounded transition text-slate-500"
-                                            title="Zoom In"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                                            </svg></button>
-                                        <button onclick="zoomChart('predict', 0.9)"
-                                            class="p-1 hover:bg-white rounded transition text-slate-500"
-                                            title="Zoom Out"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
-                                            </svg></button>
-                                        <button onclick="toggleFullScreen('pr-forecast-card')"
-                                            class="p-1 hover:bg-white rounded transition text-slate-500"
-                                            title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                            </svg></button>
-                                        <button onclick="downloadCanvas('pr-forecast', 'future_predictions')"
-                                            class="p-1 hover:bg-white rounded transition text-slate-500"
-                                            title="Download Image"><svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                            </svg></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <canvas id="pr-forecast" height="250"></canvas>
-                        </div>
-
-                        <div class="lg:col-span-1 space-y-6">
-                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                <h4 class="text-xs font-bold text-govt-navy uppercase mb-4">Vulnerability Prediction
-                                    (Next
-                                    Quarter)</h4>
-                                <div id="pr-districts" class="space-y-4">
-                                    <!-- Populated by JS -->
-                                </div>
-                            </div>
-                            <div class="bg-emerald-50 border border-emerald-100 p-6 rounded-xl">
-                                <h4 class="text-emerald-900 font-bold text-sm mb-4 uppercase">AI Recommendations</h4>
-                                <ul id="pr-recs" class="space-y-3 text-[11px] text-emerald-800">
-                                    <!-- Populated by JS -->
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Dashboard Glossary -->
-                    <div class="mt-8 pt-6 border-t border-slate-100 flex flex-wrap gap-8">
-                        <div class="flex items-start space-x-4">
-                            <div class="mt-1 w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></div>
-                            <div>
-                                <p class="text-[10px] font-black text-govt-navy uppercase tracking-wider mb-1">Surplus
-                                    Meaning</p>
-                                <p class="text-[11px] text-slate-500 max-w-xs leading-relaxed">A positive balance where
-                                    the
-                                    <strong>gross fodder supply</strong> exceeds the nutritional requirements (Dry
-                                    Matter
-                                    Demand) of the livestock population.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="mt-1 w-3 h-3 rounded-full bg-rose-500 shadow-sm shadow-rose-200"></div>
-                            <div>
-                                <p class="text-[10px] font-black text-govt-navy uppercase tracking-wider mb-1">Deficit
-                                    Meaning</p>
-                                <p class="text-[11px] text-slate-500 max-w-xs leading-relaxed">A resource gap where the
-                                    <strong>total nutritional demand</strong> of animals exceeds the locally available
-                                    supply, indicating a critical need for allocation.
-                                </p>
-                            </div>
-                        </div>
+                <button onclick="toggleChat()" class="text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div id="chat-box"
+                class="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-4 text-[11px] font-medium custom-scrollbar">
+                <div class="flex">
+                    <div
+                        class="bg-white border border-slate-200 p-3 rounded-xl rounded-tl-none shadow-sm max-w-[85%] text-slate-800">
+                        Welcome. I have indexed the 2024 Fodder Dynamics Database. How can I assist with your analysis
+                        today?
                     </div>
                 </div>
-            </main>
-        </div>
-
-        <!-- FLOATING CHATBOT -->
-        <div id="floating-chat-widget">
-            <div id="chat-window">
-                <div class="chat-header">
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider">Pashu Sahayak AI</h3>
-                        <p class="text-[9px] text-slate-400 font-mono">Live Intelligence</p>
-                    </div>
-                    <button onclick="toggleChat()" class="text-slate-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
+            </div>
+            <div class="p-4 bg-white border-t border-slate-100 flex flex-col space-y-2">
+                <div class="flex items-center space-x-2">
+                    <input id="chat-upload" type="file" accept=".csv,.xlsx,.xls" class="hidden"
+                        onchange="handleUpload(this)">
+                    <button onclick="document.getElementById('chat-upload').click()"
+                        class="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-lg transition-all"
+                        title="Upload Dataset">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                    <input id="chat-input" type="text" placeholder="Ask or analyze data..."
+                        class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-[11px] outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold">
+                    <button onclick="askAI()"
+                        class="govt-navy text-white p-2 rounded-lg shadow-md hover:bg-slate-800 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                         </svg>
                     </button>
                 </div>
-                <div id="chat-box"
-                    class="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-4 text-[11px] font-medium custom-scrollbar">
-                    <div class="flex">
-                        <div
-                            class="bg-white border border-slate-200 p-3 rounded-xl rounded-tl-none shadow-sm max-w-[85%] text-slate-800">
-                            Welcome. I have indexed the 2024 Fodder Dynamics Database. How can I assist with your
-                            analysis
-                            today?
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4 bg-white border-t border-slate-100 flex flex-col space-y-2">
-                    <div class="flex items-center space-x-2">
-                        <input id="chat-upload" type="file" accept=".csv,.xlsx,.xls" class="hidden"
-                            onchange="handleUpload(this)">
-                        <button onclick="document.getElementById('chat-upload').click()"
-                            class="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-lg transition-all"
-                            title="Upload Dataset">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                        </button>
-                        <input id="chat-input" type="text" placeholder="Ask or analyze data..."
-                            class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-[11px] outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold">
-                        <button onclick="askAI()"
-                            class="govt-navy text-white p-2 rounded-lg shadow-md hover:bg-slate-800 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div id="chat-toggle-btn" onclick="toggleChat()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
             </div>
         </div>
+        <div id="chat-toggle-btn" onclick="toggleChat()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </div>
+    </div>
 
-        <script>
-            // --- DATA STATE ---
-            let raw = null;
-            let activeView = 'overview';
-            let charts = {};
-            let currentRegion = 'all';
+    <script>
+        // --- DATA STATE ---
+        let raw = null;
+        let activeView = 'overview';
+        let charts = {};
+        let currentRegion = 'all';
 
-            const formatter = new Intl.NumberFormat('en-IN');
-            const formatTons = (n) => {
-                const val = Math.round(n);
-                if (val > 1000000) return (val / 1000000).toFixed(2) + 'M';
-                if (val > 1000) return (val / 1000).toFixed(1) + 'K';
-                return formatter.format(val);
-            };
+        const formatter = new Intl.NumberFormat('en-IN');
+        const formatTons = (n) => {
+            const val = Math.round(n);
+            if (val > 1000000) return (val / 1000000).toFixed(2) + 'M';
+            if (val > 1000) return (val / 1000).toFixed(1) + 'K';
+            return formatter.format(val);
+        };
 
-            // --- CORE ENGINE ---
-            async function load() {
-                try {
-                    const res = await fetch('/api/data');
-                    raw = await res.json();
+        // --- CORE ENGINE ---
+        async function load() {
+            try {
+                const res = await fetch('/api/data');
+                raw = await res.json();
 
-                    // Populate region list
-                    const sel = document.getElementById('district-filter');
-                    [...new Set(raw.gap.map(d => d.District))].sort().forEach(d => {
-                        const o = document.createElement('option');
-                        o.value = d; o.innerText = d;
-                        sel.appendChild(o);
-                    });
-
-                    render();
-                } catch (e) { document.body.innerHTML = "<div class='p-20 text-center font-bold text-red-600'>CRITICAL: Data Bridge Failure. Check API connectivity.</div>"; }
-            }
-
-            function handleFilterChange() {
-                currentRegion = document.getElementById('district-filter').value;
-                render();
-            }
-
-            function switchView(vid) {
-                activeView = vid;
-                document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
-                document.getElementById('view-' + vid).classList.remove('hidden');
-
-                document.querySelectorAll('#sidebar-nav button').forEach(b => {
-                    if (b.dataset.view === vid) b.classList.add('nav-active');
-                    else b.classList.remove('nav-active');
+                // Populate region list
+                const sel = document.getElementById('district-filter');
+                [...new Set(raw.gap.map(d => d.District))].sort().forEach(d => {
+                    const o = document.createElement('option');
+                    o.value = d; o.innerText = d;
+                    sel.appendChild(o);
                 });
 
-                const map = {
-                    'overview': 'Executive Overview',
-                    'supply': 'Supply Profile',
-                    'demand': 'Demand Dynamics',
-                    'risk': 'Risk & Vulnerability',
-                    'predict': 'Future Predictions'
-                };
-                document.getElementById('view-title').innerText = map[vid];
                 render();
-            }
+            } catch (e) { document.body.innerHTML = "<div class='p-20 text-center font-bold text-red-600'>CRITICAL: Data Bridge Failure. Check API connectivity.</div>"; }
+        }
 
-            function render() {
-                if (!raw) return;
+        function handleFilterChange() {
+            currentRegion = document.getElementById('district-filter').value;
+            render();
+        }
 
-                // 1. Calculate Filtered KPIs
-                let data = currentRegion === 'all' ? raw.gap : raw.gap.filter(d => d.District === currentRegion);
-                const ts = data.reduce((acc, obj) => acc + Number(obj.Total_Fodder_Tons), 0);
-                const td = data.reduce((acc, obj) => acc + Number(obj.Total_Demand_Tons), 0);
-                const balance = ts - td;
-                const ratio = (ts / td * 100).toFixed(1);
+        function switchView(vid) {
+            activeView = vid;
+            document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('view-' + vid).classList.remove('hidden');
 
-                document.getElementById('kpi-supply').innerText = formatTons(ts);
-                document.getElementById('kpi-demand').innerText = formatTons(td);
-                document.getElementById('kpi-gap').innerText = formatTons(balance);
-                document.getElementById('kpi-percent').innerText = ratio;
-                document.getElementById('kpi-gap').className = balance < 0 ? 'text-rose-700' : 'text-emerald-700';
+            document.querySelectorAll('#sidebar-nav button').forEach(b => {
+                if (b.dataset.view === vid) b.classList.add('nav-active');
+                else b.classList.remove('nav-active');
+            });
 
-                // Clean charts
-                Object.values(charts).forEach(c => c && c.destroy());
-                charts = {};
+            const map = {
+                'overview': 'Executive Overview',
+                'supply': 'Supply Profile',
+                'demand': 'Demand Dynamics',
+                'risk': 'Risk & Vulnerability',
+                'predict': 'Future Predictions'
+            };
+            document.getElementById('view-title').innerText = map[vid];
+            render();
+        }
 
-                // 2. Route to View Renderers
-                if (activeView === 'overview') renderOverview(data);
-                else if (activeView === 'supply') renderSupply();
-                else if (activeView === 'demand') renderDemand();
-                else if (activeView === 'risk') renderRisk();
-                else if (activeView === 'predict') renderPredict();
-            }
+        function render() {
+            if (!raw) return;
 
-            // --- VIEW RENDERERS ---
-            function renderOverview(data) {
-                // Table
-                const tb = document.getElementById('ov-table-body');
-                tb.innerHTML = data.sort((a, b) => a.Balance_Tons - b.Balance_Tons).map(r => `
+            // 1. Calculate Filtered KPIs
+            let data = currentRegion === 'all' ? raw.gap : raw.gap.filter(d => d.District === currentRegion);
+            const ts = data.reduce((acc, obj) => acc + Number(obj.Total_Fodder_Tons), 0);
+            const td = data.reduce((acc, obj) => acc + Number(obj.Total_Demand_Tons), 0);
+            const balance = ts - td;
+            const ratio = (ts / td * 100).toFixed(1);
+
+            document.getElementById('kpi-supply').innerText = formatTons(ts);
+            document.getElementById('kpi-demand').innerText = formatTons(td);
+            document.getElementById('kpi-gap').innerText = formatTons(balance);
+            document.getElementById('kpi-percent').innerText = ratio;
+            document.getElementById('kpi-gap').className = balance < 0 ? 'text-rose-700' : 'text-emerald-700';
+
+            // Clean charts
+            Object.values(charts).forEach(c => c && c.destroy());
+            charts = {};
+
+            // 2. Route to View Renderers
+            if (activeView === 'overview') renderOverview(data);
+            else if (activeView === 'supply') renderSupply();
+            else if (activeView === 'demand') renderDemand();
+            else if (activeView === 'risk') renderRisk();
+            else if (activeView === 'predict') renderPredict();
+        }
+
+        // --- VIEW RENDERERS ---
+        function renderOverview(data) {
+            // Table
+            const tb = document.getElementById('ov-table-body');
+            tb.innerHTML = data.sort((a, b) => a.Balance_Tons - b.Balance_Tons).map(r => `
                 <tr>
                     <td class="px-6 py-4 font-bold text-govt-navy uppercase">${r.District}</td>
                     <td class="px-6 py-4 text-right">${formatTons(r.Total_Fodder_Tons)}</td>
@@ -952,291 +930,291 @@
                 </tr>
             `).join('');
 
-                // Chart
-                const ctx = document.getElementById('ov-chart').getContext('2d');
-                charts.ov = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.map(d => d.District),
-                        datasets: [
-                            { label: 'Supply', data: data.map(d => d.Total_Fodder_Tons), backgroundColor: '#facc15', borderRadius: 4 },
-                            { label: 'Demand', data: data.map(d => d.Total_Demand_Tons), backgroundColor: '#ef4444', borderRadius: 4 }
-                        ]
+            // Chart
+            const ctx = document.getElementById('ov-chart').getContext('2d');
+            charts.ov = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.District),
+                    datasets: [
+                        { label: 'Supply', data: data.map(d => d.Total_Fodder_Tons), backgroundColor: '#facc15', borderRadius: 4 },
+                        { label: 'Demand', data: data.map(d => d.Total_Demand_Tons), backgroundColor: '#ef4444', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+                        y: { beginAtZero: true, ticks: { callback: v => formatTons(v) } }
                     },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
-                            y: { beginAtZero: true, ticks: { callback: v => formatTons(v) } }
-                        },
-                        plugins: { legend: { display: false } }
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Pie
+            const pctx = document.getElementById('ov-pie').getContext('2d');
+            const isAll = currentRegion === 'all';
+            const pieData = isAll
+                ? [raw.gap.filter(d => d.Status === 'SURPLUS').length, raw.gap.filter(d => d.Status === 'DEFICIT').length]
+                : [data[0].Total_Fodder_Tons, data[0].Total_Demand_Tons];
+            const pieLabels = isAll ? ['Surplus Districts', 'Deficit Districts'] : ['Current Supply', 'Total Demand'];
+            const pieColors = isAll ? ['#10B981', '#EF4444'] : ['#3b82f6', '#cbd5e1'];
+
+            charts.ovpie = new Chart(pctx, {
+                type: 'doughnut',
+                data: {
+                    labels: pieLabels,
+                    datasets: [{
+                        data: pieData,
+                        backgroundColor: pieColors,
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '80%', plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function renderSupply() {
+            let data = currentRegion === 'all' ? raw.supply : raw.supply.filter(d => d.District === currentRegion);
+
+            // Sum all crops
+            const crops = ['Paddy', 'Maize', 'Groundnut', 'Sugarcane', 'Jowar', 'Bajra', 'Ragi', 'Cotton', 'Pulses'];
+            const totals = crops.map(c => data.reduce((acc, row) => acc + (row[c] || 0), 0));
+
+            const pctx = document.getElementById('sp-pie').getContext('2d');
+            charts.spPie = new Chart(pctx, {
+                type: 'pie',
+                data: { labels: crops, datasets: [{ data: totals, backgroundColor: ['#0F172A', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#64748B', '#94A3B8'] }] },
+                options: { plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            });
+
+            const bctx = document.getElementById('sp-bar').getContext('2d');
+            const barData = currentRegion === 'all'
+                ? raw.supply.sort((a, b) => b.Total_Fodder_Tons - a.Total_Fodder_Tons).slice(0, 10)
+                : data;
+
+            charts.spBar = new Chart(bctx, {
+                type: 'bar',
+                data: { labels: barData.map(d => d.District), datasets: [{ data: barData.map(d => d.Total_Fodder_Tons), backgroundColor: '#0ea5e9', borderRadius: 6 }] },
+                options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+            });
+
+            // Sunburst
+            const hierarchy = {
+                'Cereals Group': ['Paddy', 'Maize', 'Jowar', 'Bajra', 'Ragi'],
+                'Commercial Crops': ['Sugarcane', 'Cotton'],
+                'Oilseeds': ['Groundnut'],
+                'Pulses & Others': ['Pulses']
+            };
+
+            // Distinct Color Palette
+            const colorMap = {
+                // Categories (Darker/Neutral)
+                'Cereals Group': '#334155', // Slate
+                'Commercial Crops': '#475569',
+                'Oilseeds': '#64748B',
+                'Pulses & Others': '#94A3B8',
+
+                // Crops (Vibrant)
+                'Paddy': '#FFD700',       // Gold
+                'Maize': '#EA580C',       // Orange
+                'Jowar': '#84CC16',       // Lime
+                'Bajra': '#D946EF',       // Fuchsia
+                'Ragi': '#8B5CF6',        // Violet
+                'Sugarcane': '#16A34A',   // Green
+                'Cotton': '#E2E8F0',      // Light Slate
+                'Groundnut': '#D97706',   // Amber
+                'Pulses': '#EC4899'       // Pink
+            };
+
+            let labels = [];
+            let parents = [];
+            let values = [];
+            let colors = [];
+
+            Object.entries(hierarchy).forEach(([cat, cropList]) => {
+                let catTotal = 0;
+                cropList.forEach(crop => {
+                    const val = data.reduce((acc, row) => acc + (row[crop] || 0), 0);
+                    if (val > 0) {
+                        labels.push(crop);
+                        parents.push(cat);
+                        values.push(val);
+                        colors.push(colorMap[crop] || '#CBD5E1'); // Fallback color
+                        catTotal += val;
                     }
                 });
+                if (catTotal > 0) {
+                    labels.push(cat);
+                    parents.push('');
+                    values.push(catTotal);
+                    colors.push(colorMap[cat] || '#1E293B');
+                }
+            });
 
-                // Pie
-                const pctx = document.getElementById('ov-pie').getContext('2d');
-                const isAll = currentRegion === 'all';
-                const pieData = isAll
-                    ? [raw.gap.filter(d => d.Status === 'SURPLUS').length, raw.gap.filter(d => d.Status === 'DEFICIT').length]
-                    : [data[0].Total_Fodder_Tons, data[0].Total_Demand_Tons];
-                const pieLabels = isAll ? ['Surplus Districts', 'Deficit Districts'] : ['Current Supply', 'Total Demand'];
-                const pieColors = isAll ? ['#10B981', '#EF4444'] : ['#3b82f6', '#cbd5e1'];
+            const sunData = [{
+                type: "sunburst",
+                labels: labels,
+                parents: parents,
+                values: values,
+                branchvalues: 'total',
+                textinfo: "label+percent root",
+                texttemplate: "%{label}<br>%{percentRoot:.1%}",
+                insidetextorientation: 'radial',
+                insidetextfont: { size: 10, color: '#ffffff', weight: 'bold', family: 'Inter', shadow: '0px 0px 2px #000' },
+                outsidetextfont: { size: 11, color: '#334155' },
+                marker: {
+                    line: { width: 2, color: 'white' },
+                    colors: colors
+                },
+                leaf: { opacity: 1 },
+                hovertemplate: '<b>%{label}</b><br>Supply: %{value:,.0f} Tons<br>Share: %{percentRoot:.1%}<extra></extra>'
+            }];
 
-                charts.ovpie = new Chart(pctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: pieLabels,
-                        datasets: [{
-                            data: pieData,
-                            backgroundColor: pieColors,
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { cutout: '80%', plugins: { legend: { position: 'bottom' } } }
-                });
-            }
+            const sunLayout = {
+                margin: { l: 0, r: 0, b: 0, t: 0 },
+            };
 
-            function renderSupply() {
-                let data = currentRegion === 'all' ? raw.supply : raw.supply.filter(d => d.District === currentRegion);
+            Plotly.newPlot('sp-sunburst', sunData, sunLayout, { displayModeBar: false });
+        }
 
-                // Sum all crops
-                const crops = ['Paddy', 'Maize', 'Groundnut', 'Sugarcane', 'Jowar', 'Bajra', 'Ragi', 'Cotton', 'Pulses'];
-                const totals = crops.map(c => data.reduce((acc, row) => acc + (row[c] || 0), 0));
+        function renderDemand() {
+            let data = currentRegion === 'all' ? raw.demand : raw.demand.filter(d => d.District === currentRegion);
 
-                const pctx = document.getElementById('sp-pie').getContext('2d');
-                charts.spPie = new Chart(pctx, {
-                    type: 'pie',
-                    data: { labels: crops, datasets: [{ data: totals, backgroundColor: ['#0F172A', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#64748B', '#94A3B8'] }] },
-                    options: { plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
-                });
+            // Animal Breakdown
+            const cats = ['Cattle_Demand', 'Buffaloes_Demand', 'Sheep_Demand', 'Goat_Demand'];
+            const labels = ['Cattle', 'Buffaloes', 'Sheep', 'Goats'];
+            const totals = cats.map(c => data.reduce((acc, row) => acc + (row[c] || 0), 0));
 
-                const bctx = document.getElementById('sp-bar').getContext('2d');
-                const barData = currentRegion === 'all'
-                    ? raw.supply.sort((a, b) => b.Total_Fodder_Tons - a.Total_Fodder_Tons).slice(0, 10)
-                    : data;
+            const pctx = document.getElementById('dm-pie').getContext('2d');
+            charts.dmPie = new Chart(pctx, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: totals, backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#facc15'] }] },
+                options: { cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+            });
 
-                charts.spBar = new Chart(bctx, {
-                    type: 'bar',
-                    data: { labels: barData.map(d => d.District), datasets: [{ data: barData.map(d => d.Total_Fodder_Tons), backgroundColor: '#0ea5e9', borderRadius: 6 }] },
-                    options: { indexAxis: 'y', plugins: { legend: { display: false } } }
-                });
+            const list = document.getElementById('dm-list');
+            let mandals = currentRegion === 'all' ? raw.mandal : raw.mandal.filter(m => m.District === currentRegion);
 
-                // Sunburst
-                const hierarchy = {
-                    'Cereals Group': ['Paddy', 'Maize', 'Jowar', 'Bajra', 'Ragi'],
-                    'Commercial Crops': ['Sugarcane', 'Cotton'],
-                    'Oilseeds': ['Groundnut'],
-                    'Pulses & Others': ['Pulses']
-                };
-
-                // Distinct Color Palette
-                const colorMap = {
-                    // Categories (Darker/Neutral)
-                    'Cereals Group': '#334155', // Slate
-                    'Commercial Crops': '#475569',
-                    'Oilseeds': '#64748B',
-                    'Pulses & Others': '#94A3B8',
-
-                    // Crops (Vibrant)
-                    'Paddy': '#FFD700',       // Gold
-                    'Maize': '#EA580C',       // Orange
-                    'Jowar': '#84CC16',       // Lime
-                    'Bajra': '#D946EF',       // Fuchsia
-                    'Ragi': '#8B5CF6',        // Violet
-                    'Sugarcane': '#16A34A',   // Green
-                    'Cotton': '#E2E8F0',      // Light Slate
-                    'Groundnut': '#D97706',   // Amber
-                    'Pulses': '#EC4899'       // Pink
-                };
-
-                let labels = [];
-                let parents = [];
-                let values = [];
-                let colors = [];
-
-                Object.entries(hierarchy).forEach(([cat, cropList]) => {
-                    let catTotal = 0;
-                    cropList.forEach(crop => {
-                        const val = data.reduce((acc, row) => acc + (row[crop] || 0), 0);
-                        if (val > 0) {
-                            labels.push(crop);
-                            parents.push(cat);
-                            values.push(val);
-                            colors.push(colorMap[crop] || '#CBD5E1'); // Fallback color
-                            catTotal += val;
-                        }
-                    });
-                    if (catTotal > 0) {
-                        labels.push(cat);
-                        parents.push('');
-                        values.push(catTotal);
-                        colors.push(colorMap[cat] || '#1E293B');
-                    }
-                });
-
-                const sunData = [{
-                    type: "sunburst",
-                    labels: labels,
-                    parents: parents,
-                    values: values,
-                    branchvalues: 'total',
-                    textinfo: "label+percent root",
-                    texttemplate: "%{label}<br>%{percentRoot:.1%}",
-                    insidetextorientation: 'radial',
-                    insidetextfont: { size: 10, color: '#ffffff', weight: 'bold', family: 'Inter', shadow: '0px 0px 2px #000' },
-                    outsidetextfont: { size: 11, color: '#334155' },
-                    marker: {
-                        line: { width: 2, color: 'white' },
-                        colors: colors
-                    },
-                    leaf: { opacity: 1 },
-                    hovertemplate: '<b>%{label}</b><br>Supply: %{value:,.0f} Tons<br>Share: %{percentRoot:.1%}<extra></extra>'
-                }];
-
-                const sunLayout = {
-                    margin: { l: 0, r: 0, b: 0, t: 0 },
-                };
-
-                Plotly.newPlot('sp-sunburst', sunData, sunLayout, { displayModeBar: false });
-            }
-
-            function renderDemand() {
-                let data = currentRegion === 'all' ? raw.demand : raw.demand.filter(d => d.District === currentRegion);
-
-                // Animal Breakdown
-                const cats = ['Cattle_Demand', 'Buffaloes_Demand', 'Sheep_Demand', 'Goat_Demand'];
-                const labels = ['Cattle', 'Buffaloes', 'Sheep', 'Goats'];
-                const totals = cats.map(c => data.reduce((acc, row) => acc + (row[c] || 0), 0));
-
-                const pctx = document.getElementById('dm-pie').getContext('2d');
-                charts.dmPie = new Chart(pctx, {
-                    type: 'doughnut',
-                    data: { labels: labels, datasets: [{ data: totals, backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#facc15'] }] },
-                    options: { cutout: '65%', plugins: { legend: { position: 'bottom' } } }
-                });
-
-                const list = document.getElementById('dm-list');
-                let mandals = currentRegion === 'all' ? raw.mandal : raw.mandal.filter(m => m.District === currentRegion);
-
-                list.innerHTML = mandals.map(m => `
+            list.innerHTML = mandals.map(m => `
                 <div class="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
                     <span class="font-bold text-govt-navy uppercase">${m.Mandal} <span class="text-slate-400 font-normal">(${m.District})</span></span>
                     <span class="font-mono text-slate-500 font-black">${formatTons(m.Total_Demand_Tons)} T</span>
                 </div>
             `).join('');
+        }
+
+        function renderRisk() {
+            const grid = document.getElementById('risk-grid');
+            grid.innerHTML = '';
+            const riskData = raw.gap.filter(d => d.Status === 'DEFICIT' && (currentRegion === 'all' || d.District === currentRegion));
+
+            if (riskData.length === 0) {
+                grid.innerHTML = '<div class="col-span-full py-20 text-center text-slate-400 font-bold uppercase tracking-widest bg-white rounded-xl border border-dashed border-slate-200">No High Risk Scenarios Isolated</div>';
+                return;
             }
 
-            function renderRisk() {
-                const grid = document.getElementById('risk-grid');
-                grid.innerHTML = '';
-                const riskData = raw.gap.filter(d => d.Status === 'DEFICIT' && (currentRegion === 'all' || d.District === currentRegion));
-
-                if (riskData.length === 0) {
-                    grid.innerHTML = '<div class="col-span-full py-20 text-center text-slate-400 font-bold uppercase tracking-widest bg-white rounded-xl border border-dashed border-slate-200">No High Risk Scenarios Isolated</div>';
-                    return;
-                }
-
-                grid.innerHTML = riskData.sort((a, b) => a.Balance_Tons - b.Balance_Tons).map(d => {
-                    const sIdx = (d.Total_Fodder_Tons / d.Total_Demand_Tons * 100).toFixed(0);
-                    return `<div class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm border-l-8 border-l-rose-600">
+            grid.innerHTML = riskData.sort((a, b) => a.Balance_Tons - b.Balance_Tons).map(d => {
+                const sIdx = (d.Total_Fodder_Tons / d.Total_Demand_Tons * 100).toFixed(0);
+                return `<div class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm border-l-8 border-l-rose-600">
                     <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest mb-1">${d.District}</p>
                     <h5 class="text-2xl font-black text-rose-800">${formatTons(Math.abs(d.Balance_Tons))} <span class="text-[10px] font-bold text-rose-400">SHORTAGE</span></h5>
                     <div class="mt-4"><div class="flex justify-between text-[9px] font-bold mb-1"><span>SUFFICIENCY INDEX</span><span>${sIdx}%</span></div>
                     <div class="w-full bg-rose-50 h-2 rounded-full overflow-hidden"><div class="bg-rose-500 h-full" style="width: ${sIdx}%"></div></div></div>
                 </div>`;
-                }).join('');
-            }
+            }).join('');
+        }
 
-            function renderPredict() {
-                if (!raw.forecast || !raw.forecast.labels) return;
+        function renderPredict() {
+            if (!raw.forecast || !raw.forecast.labels) return;
 
-                requestAnimationFrame(() => {
-                    const canvas = document.getElementById('pr-forecast');
-                    if (!canvas) return;
-                    const ctx = canvas.getContext('2d');
+            requestAnimationFrame(() => {
+                const canvas = document.getElementById('pr-forecast');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
 
-                    // Proportional Scale Logic for District predictions
-                    let sData = raw.forecast.supply;
-                    let dData_f = raw.forecast.demand;
+                // Proportional Scale Logic for District predictions
+                let sData = raw.forecast.supply;
+                let dData_f = raw.forecast.demand;
 
-                    if (currentRegion !== 'all') {
-                        const dist = raw.gap.find(d => d.District === currentRegion);
-                        const totalS = raw.gap.reduce((a, b) => a + b.Total_Fodder_Tons, 0);
-                        const totalD = raw.gap.reduce((a, b) => a + b.Total_Demand_Tons, 0);
-                        const sScale = dist.Total_Fodder_Tons / totalS;
-                        const dScale = dist.Total_Demand_Tons / totalD;
-                        sData = sData.map(v => v * sScale);
-                        dData_f = dData_f.map(v => v * dScale);
-                    }
+                if (currentRegion !== 'all') {
+                    const dist = raw.gap.find(d => d.District === currentRegion);
+                    const totalS = raw.gap.reduce((a, b) => a + b.Total_Fodder_Tons, 0);
+                    const totalD = raw.gap.reduce((a, b) => a + b.Total_Demand_Tons, 0);
+                    const sScale = dist.Total_Fodder_Tons / totalS;
+                    const dScale = dist.Total_Demand_Tons / totalD;
+                    sData = sData.map(v => v * sScale);
+                    dData_f = dData_f.map(v => v * dScale);
+                }
 
-                    charts.predict = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: raw.forecast.labels,
-                            datasets: [
-                                {
-                                    label: 'Predicted Food Available',
-                                    data: sData,
-                                    borderColor: '#3b82f6',
-                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    pointRadius: 5,
-                                    borderWidth: 3
-                                },
-                                {
-                                    label: 'Expected Food Needed',
-                                    data: dData_f,
-                                    borderColor: '#818cf8',
-                                    borderDash: [5, 5],
-                                    fill: false,
-                                    tension: 0.4,
-                                    pointRadius: 0,
-                                    borderWidth: 2
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: false,
-                                    ticks: {
-                                        color: '#64748b',
-                                        font: { size: 10, weight: 'bold' },
-                                        callback: value => formatTons(value)
-                                    },
-                                    grid: { color: '#f1f5f9' }
-                                },
-                                x: {
-                                    ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } },
-                                    grid: { display: false }
-                                }
+                charts.predict = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: raw.forecast.labels,
+                        datasets: [
+                            {
+                                label: 'Predicted Food Available',
+                                data: sData,
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 5,
+                                borderWidth: 3
                             },
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: '#0f172a',
-                                    titleFont: { size: 12, weight: 'bold' },
-                                    bodyFont: { size: 11 },
-                                    callbacks: {
-                                        label: (ctx) => `${ctx.dataset.label}: ${formatTons(ctx.parsed.y)}`
-                                    }
+                            {
+                                label: 'Expected Food Needed',
+                                data: dData_f,
+                                borderColor: '#818cf8',
+                                borderDash: [5, 5],
+                                fill: false,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    color: '#64748b',
+                                    font: { size: 10, weight: 'bold' },
+                                    callback: value => formatTons(value)
+                                },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                titleFont: { size: 12, weight: 'bold' },
+                                bodyFont: { size: 11 },
+                                callbacks: {
+                                    label: (ctx) => `${ctx.dataset.label}: ${formatTons(ctx.parsed.y)}`
                                 }
                             }
                         }
-                    });
+                    }
+                });
 
-                    // Populate Prediction Table
-                    const topRisk = currentRegion === 'all'
-                        ? [...raw.gap].sort((a, b) => a.Balance_Tons - b.Balance_Tons).slice(0, 4)
-                        : raw.gap.filter(d => d.District === currentRegion);
+                // Populate Prediction Table
+                const topRisk = currentRegion === 'all'
+                    ? [...raw.gap].sort((a, b) => a.Balance_Tons - b.Balance_Tons).slice(0, 4)
+                    : raw.gap.filter(d => d.District === currentRegion);
 
-                    const container = document.getElementById('pr-districts');
-                    container.innerHTML = topRisk.map(r => {
-                        const perc = Math.floor(Math.random() * 20) + 10;
-                        return `
+                const container = document.getElementById('pr-districts');
+                container.innerHTML = topRisk.map(r => {
+                    const perc = Math.floor(Math.random() * 20) + 10;
+                    return `
                         <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                             <div>
                                 <p class="font-bold text-govt-navy uppercase text-[10px]">${r.District}</p>
@@ -1250,221 +1228,221 @@
                             </div>
                         </div>
                     `;
-                    }).join('');
+                }).join('');
 
-                    // Populate Dynamic Recommendations
-                    const recList = document.getElementById('pr-recs');
-                    if (currentRegion === 'all') {
-                        recList.innerHTML = `
+                // Populate Dynamic Recommendations
+                const recList = document.getElementById('pr-recs');
+                if (currentRegion === 'all') {
+                    recList.innerHTML = `
                         <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">STOCK UP:</strong> Secure buffer stocks in Rayalaseema districts by Month 3.</li>
                         <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">TRANSPORT:</strong> Bridge 12% gap in East Godavari using surpluses from central hubs.</li>
                         <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">MONITOR:</strong> Watch Month 5 supply drops due to seasonal shifts.</li>
                     `;
-                    } else {
-                        const d = raw.gap.find(x => x.District === currentRegion);
-                        const isDeficit = d.Balance_Tons < 0;
-                        recList.innerHTML = `
+                } else {
+                    const d = raw.gap.find(x => x.District === currentRegion);
+                    const isDeficit = d.Balance_Tons < 0;
+                    recList.innerHTML = `
                         <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">${isDeficit ? 'EMERGENCY' : 'STORAGE'}:</strong> ${isDeficit ? 'Prioritize incoming shipments' : 'Max out silo capacity'} for <strong>${currentRegion}</strong>.</li>
                         <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">LOGISTICS:</strong> Prepare local depots for a predicted ${Math.floor(Math.random() * 15) + 5}% demand spike.</li>
                         <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">FORECAST:</strong> Maintain current reserves to handle ${currentRegion}-specific seasonal drop in Month 4.</li>
                     `;
-                    }
+                }
+            });
+        }
+
+        // --- AI ---
+        async function handleUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const box = document.getElementById('chat-box');
+
+            // Add UI Notification
+            box.innerHTML += `<div class="flex mb-4"><div class="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-xl shadow-sm text-[10px] font-bold">📤 Uploading ${file.name}...</div></div>`;
+            box.scrollTop = box.scrollHeight;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
                 });
-            }
+                const d = await res.json();
 
-            // --- AI ---
-            async function handleUpload(input) {
-                const file = input.files[0];
-                if (!file) return;
-                const box = document.getElementById('chat-box');
-
-                // Add UI Notification
-                box.innerHTML += `<div class="flex mb-4"><div class="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-xl shadow-sm text-[10px] font-bold">📤 Uploading ${file.name}...</div></div>`;
-                box.scrollTop = box.scrollHeight;
-
-                const formData = new FormData();
-                formData.append('file', file);
-
-                try {
-                    const res = await fetch('/api/upload', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const d = await res.json();
-
-                    if (res.ok) {
-                        box.innerHTML += `<div class="flex mb-4"><div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-xl shadow-sm text-[10px]">
+                if (res.ok) {
+                    box.innerHTML += `<div class="flex mb-4"><div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-xl shadow-sm text-[10px]">
                         <strong>✅ Dataset Indexed!</strong><br>
                         Rows: ${d.summary.rows}<br>
                         Columns: ${d.summary.cols.join(', ')}<br><br>
                         I can now provide custom predictions and analysis based on this file. 
                         Try asking: <em>"Analyze this data and predict shortages"</em>
                     </div></div>`;
-                    } else {
-                        throw new Error(d.message);
-                    }
-                } catch (e) {
-                    box.innerHTML += `<div class="flex mb-4"><div class="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl shadow-sm text-[10px] font-bold">⚠️ Upload Failed: ${e.message}</div></div>`;
+                } else {
+                    throw new Error(d.message);
                 }
-                box.scrollTop = box.scrollHeight;
+            } catch (e) {
+                box.innerHTML += `<div class="flex mb-4"><div class="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl shadow-sm text-[10px] font-bold">⚠️ Upload Failed: ${e.message}</div></div>`;
             }
+            box.scrollTop = box.scrollHeight;
+        }
 
-            function toggleChat() {
-                const win = document.getElementById('chat-window');
-                win.classList.toggle('active');
-                if (win.classList.contains('active')) {
-                    document.getElementById('chat-input').focus();
-                }
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.classList.toggle('active');
+            if (win.classList.contains('active')) {
+                document.getElementById('chat-input').focus();
             }
+        }
 
-            document.getElementById('chat-input').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') askAI();
-            });
+        document.getElementById('chat-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') askAI();
+        });
 
-            async function askAI() {
-                const inp = document.getElementById('chat-input');
-                const msg = inp.value.trim(); if (!msg) return;
-                const box = document.getElementById('chat-box');
+        async function askAI() {
+            const inp = document.getElementById('chat-input');
+            const msg = inp.value.trim(); if (!msg) return;
+            const box = document.getElementById('chat-box');
 
-                // Add User Message
-                box.innerHTML += `<div class="flex justify-end mb-4"><div class="govt-navy text-white p-3 rounded-xl rounded-tr-none shadow-sm max-w-[85%] text-left">${msg}</div></div>`;
-                inp.value = '';
-                box.scrollTop = box.scrollHeight;
+            // Add User Message
+            box.innerHTML += `<div class="flex justify-end mb-4"><div class="govt-navy text-white p-3 rounded-xl rounded-tr-none shadow-sm max-w-[85%] text-left">${msg}</div></div>`;
+            inp.value = '';
+            box.scrollTop = box.scrollHeight;
 
-                // Add Loading Indicator
-                const loadingId = 'loading-' + Date.now();
-                box.innerHTML += `<div id="${loadingId}" class="flex mb-4"><div class="bg-slate-200 text-slate-500 p-3 rounded-xl rounded-tl-none shadow-sm text-[10px] italic flex items-center">
+            // Add Loading Indicator
+            const loadingId = 'loading-' + Date.now();
+            box.innerHTML += `<div id="${loadingId}" class="flex mb-4"><div class="bg-slate-200 text-slate-500 p-3 rounded-xl rounded-tl-none shadow-sm text-[10px] italic flex items-center">
                 <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce mr-1"></span>
                 <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce mr-1" style="animation-delay: 0.1s"></span>
                 <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
             </div></div>`;
-                box.scrollTop = box.scrollHeight;
+            box.scrollTop = box.scrollHeight;
 
-                // Create AI Bubble for Streaming
-                const aiBubbleId = 'ai-' + Date.now();
-                box.innerHTML += `<div class="flex mb-4"><div id="${aiBubbleId}" class="bg-white border border-slate-200 p-3 rounded-xl rounded-tl-none shadow-sm max-w-[85%] whitespace-pre-wrap text-left leading-relaxed text-slate-800 text-[11px]"></div></div>`;
-                const aiBubble = document.getElementById(aiBubbleId);
+            // Create AI Bubble for Streaming
+            const aiBubbleId = 'ai-' + Date.now();
+            box.innerHTML += `<div class="flex mb-4"><div id="${aiBubbleId}" class="bg-white border border-slate-200 p-3 rounded-xl rounded-tl-none shadow-sm max-w-[85%] whitespace-pre-wrap text-left leading-relaxed text-slate-800 text-[11px]"></div></div>`;
+            const aiBubble = document.getElementById(aiBubbleId);
 
-                try {
-                    const res = await fetch('/api/chat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: msg })
-                    });
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
 
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-                    // Remove Loading
-                    if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                // Remove Loading
+                if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
 
-                    const reader = res.body.getReader();
-                    const decoder = new TextDecoder();
-                    let fullText = "";
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = "";
 
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                        fullText += decoder.decode(value, { stream: true });
+                    fullText += decoder.decode(value, { stream: true });
 
-                        // Simple Format
-                        let formatted = fullText
-                            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-govt-navy">$1</strong>')
-                            .replace(/^\s*\*\s/gm, '• ');
+                    // Simple Format
+                    let formatted = fullText
+                        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-govt-navy">$1</strong>')
+                        .replace(/^\s*\*\s/gm, '• ');
 
-                        aiBubble.innerHTML = formatted;
-                        box.scrollTop = box.scrollHeight;
-                    }
-                } catch (e) {
-                    console.error("Chat Error:", e);
-                    if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                    aiBubble.innerHTML = `<div class="text-rose-700 font-bold">⚠️ Connection lost. Try again.</div>`;
+                    aiBubble.innerHTML = formatted;
+                    box.scrollTop = box.scrollHeight;
                 }
+            } catch (e) {
+                console.error("Chat Error:", e);
+                if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                aiBubble.innerHTML = `<div class="text-rose-700 font-bold">⚠️ Connection lost. Try again.</div>`;
+            }
+        }
+
+        function exportCSV() {
+            if (!raw || !raw.gap) {
+                alert("Data not loaded yet!");
+                return;
+            }
+            const data = currentRegion === 'all' ? raw.gap : raw.gap.filter(d => d.District === currentRegion);
+            if (data.length === 0) return;
+
+            const headers = Object.keys(data[0]);
+            const csvRows = [headers.join(',')];
+
+            for (const row of data) {
+                const values = headers.map(header => {
+                    const val = row[header];
+                    const escaped = ('' + val).replace(/"/g, '""');
+                    return `"${escaped}"`;
+                });
+                csvRows.push(values.join(','));
             }
 
-            function exportCSV() {
-                if (!raw || !raw.gap) {
-                    alert("Data not loaded yet!");
-                    return;
-                }
-                const data = currentRegion === 'all' ? raw.gap : raw.gap.filter(d => d.District === currentRegion);
-                if (data.length === 0) return;
+            const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `fodder_report_${currentRegion}_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
-                const headers = Object.keys(data[0]);
-                const csvRows = [headers.join(',')];
+        function toggleFullScreen(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('fullscreen-card');
+            window.dispatchEvent(new Event('resize'));
+        }
 
-                for (const row of data) {
-                    const values = headers.map(header => {
-                        const val = row[header];
-                        const escaped = ('' + val).replace(/"/g, '""');
-                        return `"${escaped}"`;
-                    });
-                    csvRows.push(values.join(','));
-                }
+        function zoomChart(chartKey, scale) {
+            const chart = charts[chartKey];
+            if (!chart) return;
 
-                const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.setAttribute("href", url);
-                link.setAttribute("download", `fodder_report_${currentRegion}_${new Date().toISOString().slice(0, 10)}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+            const sc = chart.scales;
+            if (sc.x && sc.x.min !== undefined) {
+                const range = (sc.x.max - sc.x.min) / scale;
+                const center = (sc.x.max + sc.x.min) / 2;
+                if (!chart.options.scales.x) chart.options.scales.x = {};
+                chart.options.scales.x.min = center - range / 2;
+                chart.options.scales.x.max = center + range / 2;
             }
+            if (sc.y && sc.y.min !== undefined) {
+                const range = (sc.y.max - sc.y.min) / scale;
+                const center = (sc.y.max + sc.y.min) / 2;
+                if (!chart.options.scales.y) chart.options.scales.y = {};
+                chart.options.scales.y.min = center - range / 2;
+                chart.options.scales.y.max = center + range / 2;
+            }
+            chart.update();
+        }
 
-            function toggleFullScreen(id) {
-                const el = document.getElementById(id);
-                el.classList.toggle('fullscreen-card');
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const mc = document.getElementById('main-content');
+            sb.classList.toggle('collapsed');
+            mc.classList.toggle('expanded');
+
+            // Re-render charts to fix responsive width issues
+            setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
-            }
+            }, 300);
+        }
 
-            function zoomChart(chartKey, scale) {
-                const chart = charts[chartKey];
-                if (!chart) return;
+        function updateClock() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const el = document.getElementById('live-clock');
+            if (el) el.innerText = `${dateStr} • ${timeStr}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-                const sc = chart.scales;
-                if (sc.x && sc.x.min !== undefined) {
-                    const range = (sc.x.max - sc.x.min) / scale;
-                    const center = (sc.x.max + sc.x.min) / 2;
-                    if (!chart.options.scales.x) chart.options.scales.x = {};
-                    chart.options.scales.x.min = center - range / 2;
-                    chart.options.scales.x.max = center + range / 2;
-                }
-                if (sc.y && sc.y.min !== undefined) {
-                    const range = (sc.y.max - sc.y.min) / scale;
-                    const center = (sc.y.max + sc.y.min) / 2;
-                    if (!chart.options.scales.y) chart.options.scales.y = {};
-                    chart.options.scales.y.min = center - range / 2;
-                    chart.options.scales.y.max = center + range / 2;
-                }
-                chart.update();
-            }
-
-            function toggleSidebar() {
-                const sb = document.getElementById('sidebar');
-                const mc = document.getElementById('main-content');
-                sb.classList.toggle('collapsed');
-                mc.classList.toggle('expanded');
-
-                // Re-render charts to fix responsive width issues
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('resize'));
-                }, 300);
-            }
-
-            function updateClock() {
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-                const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                const el = document.getElementById('live-clock');
-                if (el) el.innerText = `${dateStr} • ${timeStr}`;
-            }
-            setInterval(updateClock, 1000);
-            updateClock();
-
-            load();
-        </script>
+        load();
+    </script>
 </body>
 
 </html>
