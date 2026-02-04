@@ -56,146 +56,161 @@ def get_governance_intelligence(df):
     }
 
 def get_local_response(prompt, df, custom_context=None):
-    """Simple and friendly fallback engine."""
+    """
+    STARK NLU (Simple Tabular Analysis & Response Kernel)
+    A robust heuristic engine that simulates 'training' by mapping multi-dimensional 
+    intents to the available CSV data structures.
+    """
     if df is None and not custom_context:
-        return "I can't reach the data right now. Please check your files!"
+        return "I'm currently disconnected from my knowledge base. Please check if the datasets are loaded."
 
     clean_q = prompt.upper()
-    header = "HELLO! HERE IS YOUR SIMPLE REPORT\n\n"
-    
-    # Common Typos / Aliases Mapping
-    TYPO_MAP = {
-        "CHITOOR": "CHITTOOR",
-        "KADAPA": "KADAPA",
-        "YSR": "KADAPA",
-        "ANANTAPURAM": "ANANTAPUR",
-        "ANANTAPURAMU": "ANANTAPUR",
-        "VIZAG": "VISAKHAPATNAM",
-        "EAST GODAVARI": "EAST GODAVARI",
-        "WEST GODAVARI": "WEST GODAVARI",
-        "GODAVARI": "WEST GODAVARI", # Default to West if ambiguous
-        "EG": "EAST GODAVARI",
-        "WG": "WEST GODAVARI",
-        "ASR": "ALLURI SITARAMA RAJU",
-        "ALLURI": "ALLURI SITARAMA RAJU",
-        "NTR": "NTR",
-        "KONASEEMA": "DR B.R. AMBEDKAR KONASEEMA"
+    header = "📊 PASHU SAHAYAK - DATA INSIGHT\n\n"
+    footer = f"\n---\n*Insight generated from 2024 Livestock Dynamics Database*"
+
+    # 1. BRAIN: LOAD SUPPLEMENTARY DATA (LAZY LOAD)
+    try:
+        supply_df = pd.read_csv(get_data_path("district_fodder_supply.csv"))
+        demand_df = pd.read_csv(get_data_path("district_fodder_demand.csv"))
+    except:
+        supply_df, demand_df = None, None
+
+    # 2. ENTITY LIBRARIES
+    CROP_MAP = {
+        "PADDY": "Paddy", "RICE": "Paddy", "STRAW": "Paddy",
+        "MAIZE": "Maize", "CORN": "Maize",
+        "GROUNDNUT": "Groundnut", "PEANUT": "Groundnut",
+        "SUGARCANE": "Sugarcane", "SUGAR": "Sugarcane",
+        "JOWAR": "Jowar", "BAJRA": "Bajra", "RAGI": "Ragi", "COTTON": "Cotton"
+    }
+    ANIMAL_MAP = {
+        "CATTLE": "Cattle_Demand", "COW": "Cattle_Demand", "BULL": "Cattle_Demand",
+        "BUFFALO": "Buffaloes_Demand", "BUFFALOE": "Buffaloes_Demand",
+        "SHEEP": "Sheep_Demand", "GOAT": "Goat_Demand",
+        "PIG": "Pig_Demand", "POULTRY": "Poultry_Demand", "CHICKEN": "Poultry_Demand"
     }
 
-    def match_district_fuzzy(query, district_list):
-        """Tries to find the best matching district from the query."""
-        q_clean = query.replace(" ", "").upper()
-        
-        # 1. Check Typo Map
-        for typo, correct in TYPO_MAP.items():
-            if typo in query.upper(): # check strict word in original query
-                 return correct
-        
-        # 2. Check Standard List
-        for d in district_list:
-            d_clean = d.upper().replace(" ", "").replace(".", "")
-            if d_clean in q_clean:
-                return d
-            # Reverse check (if query is part of district name, e.g. "ALLURI" in "ALLURI SITARAMA RAJU")
-            if q_clean in d_clean and len(q_clean) > 4:
-                return d
-        return None
-        
+    # 3. HELPER: DATA FORMATTER
     def fmt(n):
         try:
             val = float(n)
             if abs(val) >= 100000: return f"{val/100000:.2f} Lakh Tons"
-            if abs(val) >= 1000: return f"{val/1000:.1f} Thousand Tons"
+            if abs(val) >= 1000: return f"{val/1000:.1f} K Tons"
             return f"{val:,.0f} Tons"
         except: return str(n)
 
-    if custom_context and any(word in clean_q for word in ["CUSTOM", "UPLOAD", "NEW", "PREDICT"]):
-        return header + "NEW DATA FOUND:\nI see you uploaded some new data! My brain is currently in 'Safe Mode' so I can't do deep math on it yet, but I've saved it and it's ready for looking at."
+    # 4. INTENT: CROP ANALYSIS
+    if supply_df is not None:
+        for keyword, col in CROP_MAP.items():
+            if keyword in clean_q:
+                # Find top producer of this crop
+                top_row = supply_df.sort_values(col, ascending=False).iloc[0]
+                total_crop = supply_df[col].sum()
+                return header + f"CROP REPORT: {col.upper()}\n\n" + \
+                    f"State Total: **{fmt(total_crop)}**\n" + \
+                    f"Top Producer: **{top_row['District']}** ({fmt(top_row[col])})\n\n" + \
+                    f"Analysis: {col} is a vital fodder source. {top_row['District']} contributes significantly to the state's biomass pool." + footer
 
-    footer = f"\n---\n*Source: {ASSUMPTIONS['lineage']}*"
+    # 5. INTENT: ANIMAL DEMAND ANALYSIS
+    if demand_df is not None:
+        for keyword, col in ANIMAL_MAP.items():
+            if keyword in clean_q:
+                # Find highest demand for this animal
+                top_row = demand_df.sort_values(col, ascending=False).iloc[0]
+                total_demand = demand_df[col].sum()
+                animal_name = col.replace('_Demand', '')
+                return header + f"LIVESTOCK INSIGHT: {animal_name.upper()}\n\n" + \
+                    f"Total Feed Needed (State): **{fmt(total_demand)}**\n" + \
+                    f"Highest Requirement in: **{top_row['District']}** ({fmt(top_row[col])})\n\n" + \
+                    f"Management Tip: Ensuring quality feed for {animal_name} in {top_row['District']} is critical for production targets." + footer
+
+    # 6. INTENT: COMPARISON ("Compare X and Y")
+    districts_in_query = []
+    all_districts = df['District'].unique()
+    for d in all_districts:
+        if d.upper().replace(" ", "") in clean_q.replace(" ", ""):
+            districts_in_query.append(d)
     
-    # Expanded keyword list for general queries
-    general_keywords = ["STATE", "OVERVIEW", "SUMMARY", "TOTAL", "STATUS", "SITUATION", "ANALYSIS", "REPORT", "FODDER", "GAP", "SUPPLY", "DEMAND", "HELP", "HELLO", "HI", "WHAT", "WHICH", "FOOD", "AVAILABLE", "MORE", "LESS"]
+    if len(districts_in_query) >= 2:
+        d1, d2 = districts_in_query[0], districts_in_query[1]
+        r1 = df[df['District'] == d1].iloc[0]
+        r2 = df[df['District'] == d2].iloc[0]
+        diff = r1['Balance_Tons'] - r2['Balance_Tons']
+        winner = d1 if diff > 0 else d2
+        return header + f"COMPARISON: {d1.upper()} vs {d2.upper()}\n\n" + \
+            f"• {d1}: {fmt(r1['Balance_Tons'])} ({r1['Status']})\n" + \
+            f"• {d2}: {fmt(r2['Balance_Tons'])} ({r2['Status']})\n\n" + \
+            f"Gap Analysis: **{winner}** is in a better relative position by {fmt(abs(diff))}." + footer
+
+    # 7. INTENT: RANKING (ORDINAL)
+    ORDINAL_MAP = {"FIRST": 0, "1ST": 0, "SECOND": 1, "2ND": 1, "THIRD": 2, "3RD": 2, "4TH": 3, "FIFTH": 4}
+    rank_idx = -1
+    for word, idx in ORDINAL_MAP.items():
+        if word in clean_q: rank_idx = idx; break
     
-    # --- 1. DETECT RANKING REQUESTS ---
-    ORDINAL_MAP = {
-        "FIRST": 0, "1ST": 0, "SECOND": 1, "2ND": 1, "THIRD": 2, "3RD": 2,
-        "FOURTH": 3, "4TH": 3, "FIFTH": 4, "5TH": 4
-    }
-    rank_idx = 0
-    rank_label = "TOP"
-    is_ranking_query = False
-    for word, i in ORDINAL_MAP.items():
-        if word in clean_q:
-            rank_idx = i
-            rank_label = f"{word}"
-            is_ranking_query = True
-            break
+    if rank_idx != -1:
+        sort_col = 'Balance_Tons'
+        ascending = True # default to shortage
+        label = "SHORTAGE RANKING"
+        if any(x in clean_q for x in ["SURPLUS", "BEST", "TOP", "SUPPLY"]):
+            ascending = False
+            label = "RESOURCE RANKING"
+            sort_col = 'Total_Fodder_Tons' if "SUPPLY" in clean_q else 'Balance_Tons'
+        
+        sorted_df = df.sort_values(sort_col, ascending=ascending)
+        if rank_idx < len(sorted_df):
+            row = sorted_df.iloc[rank_idx]
+            return header + f"{label}: #{rank_idx+1}\n\n" + \
+                f"District: **{row['District'].upper()}**\n" + \
+                f"Current Status: {fmt(row[sort_col])} ({row['Status']})\n" + \
+                f"Overall Need: {fmt(row['Total_Demand_Tons'])}" + footer
 
-    # --- 2. RANKING & SUPERLATIVE LOGIC (PRIORITY) ---
-    if df is not None:
-        if is_ranking_query or any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX", "MORE", "GREATER", "WORST", "SHORTAGE", "DEFICIT", "BEST", "SURPLUS"]):
-            # A. Highest Supply (Food Available)
-            if any(x in clean_q for x in ["SUPPLY", "FOOD", "AVAILABLE"]) and any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX", "MORE", "GREATER"]):
-                sorted_df = df.sort_values('Total_Fodder_Tons', ascending=False)
-                if rank_idx < len(sorted_df):
-                    row = sorted_df.iloc[rank_idx]
-                    return header + f"{rank_label} PERFORMER: {row['District'].upper()}\n\nThis district is ranked #{rank_idx+1} in fodder supply.\n\n- Supply: **{fmt(row['Total_Fodder_Tons'])}**\n- Demand: {fmt(row['Total_Demand_Tons'])}\n" + footer
+    # 8. ENTITY: DISTRICT SPECIFIC DEEP DIVE
+    # Use a custom fuzzy match for fragmented district names
+    def smart_match(q, dists):
+        q_norm = q.replace(" ", "").upper()
+        # Direct match check
+        for d in dists:
+            d_norm = d.upper().replace(" ", "")
+            if d_norm in q_norm or q_norm in d_norm: return d
+        # Common alias check
+        aliases = {"KONASEEMA": "DR B.R. AMBEDKAR KONASEEMA", "ASR": "ALLURI SITARAMA RAJU", "YSR": "KADAPA", "VIZAG": "VISAKHAPATNAM"}
+        for k, v in aliases.items():
+            if k in q_norm: return v
+        return None
 
-            # B. Worst Deficit/Shortage
-            if any(x in clean_q for x in ["DEFICIT", "SHORTAGE", "POOR", "WORST", "LOW", "LEAST"]):
-                sorted_df = df.sort_values('Balance_Tons', ascending=True)
-                if rank_idx < len(sorted_df):
-                    row = sorted_df.iloc[rank_idx]
-                    return header + f"{rank_label} CRITICAL ALERT: {row['District'].upper()}\n\nThis district is ranked #{rank_idx+1} in terms of resource gap.\n\n- Shortage Gap: **{fmt(row['Balance_Tons'])}**\n- Rank: {rank_label} most severe shortage.\n" + footer
+    target_dist = smart_match(clean_q, all_districts)
+    if target_dist:
+        row = df[df['District'] == target_dist].iloc[0]
+        # Get extra context if detail files exist
+        context_str = ""
+        if supply_df is not None:
+            s_row = supply_df[supply_df['District'] == target_dist].iloc[0]
+            top_crop = s_row[['Paddy','Maize','Groundnut','Sugarcane','Jowar','Bajra','Ragi']].idxmax()
+            context_str += f"• Primary Crop: {top_crop} ({fmt(s_row[top_crop])})\n"
+        if demand_df is not None:
+            d_row = demand_df[demand_df['District'] == target_dist].iloc[0]
+            top_animal = d_row[['Cattle_Demand','Buffaloes_Demand','Sheep_Demand','Goat_Demand']].idxmax().replace('_Demand','')
+            context_str += f"• Highest Demand: {top_animal} ({fmt(d_row[d_row[['Cattle_Demand','Buffaloes_Demand','Sheep_Demand','Goat_Demand']].idxmax()])})\n"
 
-            # C. Best Surplus
-            if "SURPLUS" in clean_q or "BEST" in clean_q:
-                sorted_df = df.sort_values('Balance_Tons', ascending=False)
-                if rank_idx < len(sorted_df):
-                    row = sorted_df.iloc[rank_idx]
-                    return header + f"{rank_label} SURPLUS: {row['District'].upper()}\n\nRanked #{rank_idx+1} for safety margin.\n\n- Surplus: **{fmt(row['Balance_Tons'])}**\n" + footer
+        return header + f"EXPERT REPORT: {target_dist.upper()}\n\n" + \
+            f"Status: **{row['Status']}**\n" + \
+            f"Supply vs Demand: {fmt(row['Total_Fodder_Tons'])} vs {fmt(row['Total_Demand_Tons'])}\n" + \
+            f"Gap Intensity: {fmt(row['Balance_Tons'])}\n\n" + \
+            "**KEY DYNAMICS:**\n" + context_str + \
+            f"\nRecomendation: " + ("Maintain current surplus levels through storage." if row['Status'] == 'SURPLUS' else "Immediate inter-district transport required to bridge the gap.") + footer
 
-    # --- 3. SPECIFIC DISTRICT REPORT ---
-    if df is not None:
-        matched_dist_name = match_district_fuzzy(prompt, df['District'].unique())
-        if matched_dist_name and not is_ranking_query: 
-            row = df[df['District'] == matched_dist_name].iloc[0]
-            status = row['Status']
-            content = f"DISTRICT REPORT: {row['District'].upper()}\n\n"
-            content += f"How is it looking? {status}\n"
-            content += f"- Food they have: {fmt(row['Total_Fodder_Tons'])}\n"
-            content += f"- Food they need: {fmt(row['Total_Demand_Tons'])}\n"
-            content += f"- The Gap: {fmt(row['Balance_Tons'])}\n\n"
-            
-            if any(w in clean_q for w in ["RISK", "CRITERIA", "VULNERABILITY", "DANGER"]):
-                supply = row['Total_Fodder_Tons']
-                demand = row['Total_Demand_Tons']
-                deficit_pct = ((supply - demand) / demand) * 100 if demand > 0 else 0
-                risk_level = "SAFE"
-                if deficit_pct < -50: risk_level = "CRITICAL (High Risk)"
-                elif deficit_pct < -20: risk_level = "MODERATE"
-                elif deficit_pct < 0: risk_level = "LOW"
-                content += f"⚠️ RISK ASSESSMENT:\nCurrent Risk Level: **{risk_level}**\nThis district has a deficit of {abs(deficit_pct):.1f}%. Any deficit over 20% is considered stressful for livestock.\n\n"
-
-            content += f"SUGGESTION:\n" + ("They are doing well with a surplus!" if status == 'SURPLUS' else "They need a bit of help to get more food for their animals soon.")
-            return header + content + footer
-
-    # --- 4. PREDICTION LOGIC ---
-    if df is not None and any(x in clean_q for x in ["PREDICT", "FUTURE", "FORECAST", "NEXT", "OUTLOOK"]):
-        found_name = match_district_fuzzy(prompt, df['District'].unique())
-        if found_name:
-            found_district = df[df['District'] == found_name].iloc[0]
-            monthly_burn = found_district['Total_Demand_Tons'] / 12
-            current_stock = found_district['Total_Fodder_Tons']
-            p_content = f"🔮 FUTURE FORECAST: {found_district['District'].upper()}\n\n"
-            p_content += f"Based on a monthly consumption of ~{fmt(monthly_burn)}, here is the outlook:\n\n"
-            p_content += "| Month | Est. Stock | Status |\n|---|---|---|\n"
-            for m in ["Month 1", "Month 2", "Month 3", "Month 4", "Month 5", "Month 6"]:
-                current_stock -= monthly_burn
-                p_content += f"| {m} | {fmt(max(0, current_stock))} | {'🟢 Safe' if current_stock > 0 else '🔴 Deficit'} |\n"
-            p_content += "\n**ANALYSIS:** " + ("Stocks are healthy!" if current_stock > 0 else "Warning! Stocks may run out.")
-            return header + p_content + footer
+    # 9. DEFAULT: COMPREHENSIVE STATE SUMMARY
+    total_s = df['Total_Fodder_Tons'].sum()
+    total_d = df['Total_Demand_Tons'].sum()
+    net = total_s - total_d
+    surplus_count = len(df[df['Status']=='SURPLUS'])
+    return header + "STATEWIDE SITUATIONAL AWARENESS\n\n" + \
+        f"The state of Andhra Pradesh currently has **{fmt(total_s)}** of fodder against a requirement of **{fmt(total_d)}**.\n\n" + \
+        f"- Current Balance: {fmt(net)} {'Surplus' if net > 0 else 'Deficit'}\n" + \
+        f"- Secure Districts: {surplus_count} / {len(df)}\n\n" + \
+        "**AI PROMPT TIPS:**\n" + \
+        "Try asking: 'Which district grows most Paddy?', 'Compare Prakasam and Eluru', or 'Who needs the second most buffalo feed?'" + footer
 
     # --- 5. KNOWLEDGE BASE ---
     KNOWLEDGE_BASE = {
@@ -246,12 +261,23 @@ def get_ai_response_stream(prompt, custom_context=None):
                 top_data = df_gap.sort_values('Balance_Tons', ascending=False).head(5).copy()
                 for col in ['Total_Fodder_Tons', 'Balance_Tons']:
                     top_data[col] = top_data[col].apply(lambda x: f"{x:,.0f}")
-                context_summary = f"\nLATEST DATA RECORDS:\n{top_data[['District', 'Total_Fodder_Tons', 'Balance_Tons', 'Status']].to_string(index=False)}\n"
+                context_summary = f"\nSTATEWIDE SUMMARY:\n{top_data[['District', 'Total_Fodder_Tons', 'Balance_Tons', 'Status']].to_string(index=False)}\n"
             
+            # Add specific domain expertise context
+            if supply_df is not None and demand_df is not None:
+                top_crop = supply_df.sort_values('Paddy', ascending=False).iloc[0]['District']
+                top_buffalo = demand_df.sort_values('Buffaloes_Demand', ascending=False).iloc[0]['District']
+                context_summary += f"\nEXPERT KNOWLEDGE:\n- Paddy Leader: {top_crop}\n- Highest Buffalo Demand: {top_buffalo}\n"
+
             if custom_context:
                 context_summary += f"\nNEW USER DATA:\n{custom_context}\n"
 
-            system_instruction = f"ROLE: Senior Predictive Agriculture Advisor. CONTEXT: {context_summary}"
+            system_instruction = f"""
+            ROLE: Senior Predictive Agriculture Advisor.
+            OBJECTIVE: Provide deep analysis on fodder, crops, and livestock.
+            CONTEXT: {context_summary}
+            STYLE: Professional, data-driven, and predictive. Use bold headers.
+            """
             full_prompt = f"{system_instruction}\n\nUSER QUESTION: {prompt}"
             
             for chunk in llm.stream(full_prompt):
