@@ -24,7 +24,18 @@ def get_dashboard_data():
         demand_df = pd.read_csv(get_data_path("district_fodder_demand.csv")).fillna(0)
         mandal_df = pd.read_csv(get_data_path("mandal_fodder_demand.csv")).fillna(0)
         
-        # Simple Forecast Logic: Project current totals over 6 months with slight variance
+        # Normalize District names to handle inconsistencies (spaces, case)
+        for df in [gap_df, supply_df, demand_df, mandal_df]:
+            if 'District' in df.columns:
+                df['District'] = df['District'].astype(str).str.upper().str.replace(' ', '', regex=False)
+        
+        # Standardize specific long names if needed (optional but good for consistency)
+        # e.g., 'DRB.R.AMBEDKARKONASEEMA' vs 'DRBRAMBEDKARKONASEEMA'
+        for df in [gap_df, supply_df, demand_df, mandal_df]:
+            if 'District' in df.columns:
+                df['District'] = df['District'].str.replace('.', '', regex=False)
+        
+        # Simple Forecast Logic
         total_s = gap_df['Total_Fodder_Tons'].sum()
         total_d = gap_df['Total_Demand_Tons'].sum()
         
