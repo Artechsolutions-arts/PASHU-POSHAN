@@ -225,57 +225,46 @@ def get_local_response(prompt, df, custom_context=None):
     return header + content + footer
 
 def get_ai_response_stream(prompt, custom_context=None):
+    # Load data once at the start
     try:
         df_gap = pd.read_csv(get_data_path("fodder_gap_analysis.csv"))
     except:
         df_gap = None
 
+    # Try Ollama only if specifically enabled and available
     if USE_OLLAMA:
         try:
-            import requests
-            requests.get("http://localhost:11434", timeout=1)
+            import requests # Local import for safety
+            # Quick check if Ollama is actually reachable
+            requests.get("http://localhost:11434", timeout=0.5)
+            
             from langchain_ollama import ChatOllama
             llm = ChatOllama(model="gemma3:1b", temperature=0.1, base_url="http://localhost:11434")
             
             context_summary = ""
             if df_gap is not None:
-                # Format numbers with commas to prevent AI from seeing scientific notation
                 top_data = df_gap.sort_values('Balance_Tons', ascending=False).head(5).copy()
                 for col in ['Total_Fodder_Tons', 'Balance_Tons']:
                     top_data[col] = top_data[col].apply(lambda x: f"{x:,.0f}")
-                
                 context_summary = f"\nLATEST DATA RECORDS:\n{top_data[['District', 'Total_Fodder_Tons', 'Balance_Tons', 'Status']].to_string(index=False)}\n"
             
             if custom_context:
                 context_summary += f"\nNEW USER DATA:\n{custom_context}\n"
 
-            system_instruction = f"""
-            ROLE: Senior Predictive Agriculture Advisor.
-            
-            OBJECTIVE: Analyze current records and PROVIDE PREDICTIONS for the next 6-12 months. 
-            Tell the user what is likely to happen (e.g., 'If this trend continues, District X will face a fodder shortage by summer').
-            
-            STRICT RULES:
-            - PREDICTIONS: You must include a section called 'FUTURE PREDICTIONS:'.
-            - NO SCIENTIFIC NOTATION: Never use '1.1e+06'. Use '11 Lakh' or '1,120,000'.
-            - NO HASHTAGS: Do not use '#' symbols. 
-            - HEADERS: Use bold plain text like **SUMMARY:** or **PREDICTIONS:**.
-            - SIMPLE ENGLISH: Explain like you are talking to a farmer.
-            
-            CONTEXT: {context_summary}
-            """
-            
+            system_instruction = f"ROLE: Senior Predictive Agriculture Advisor. CONTEXT: {context_summary}"
             full_prompt = f"{system_instruction}\n\nUSER QUESTION: {prompt}"
             
             for chunk in llm.stream(full_prompt):
-                # Strip hashtags just in case the model forgets
-                text = chunk.content.replace('#', '')
-                yield text
-        except Exception as e:
-            # yield f"(Using backup engine) " # Hiding internal details from user
-            yield get_local_response(prompt, df_gap, custom_context)
-    else:
+                yield chunk.content.replace('#', '')
+            return # Success, exit generator
+        except:
+            pass # Fallback to local logic below
+
+    # STABLE LOCAL FALLBACK (Always works)
+    try:
         yield get_local_response(prompt, df_gap, custom_context)
+    except Exception as e:
+        yield f"⚠️ System Error: {str(e)}"
 
 def get_ai_response(prompt, custom_context=None):
     resp = ""
