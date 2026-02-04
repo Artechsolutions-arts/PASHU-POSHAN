@@ -142,7 +142,24 @@ def get_local_response(prompt, df, custom_context=None):
             f"• {d2}: {fmt(r2['Balance_Tons'])} ({r2['Status']})\n\n" + \
             f"Gap Analysis: **{winner}** is in a better relative position by {fmt(abs(diff))}." + footer
 
-    # 7. INTENT: RANKING (ORDINAL)
+    # 7. DASHBOARD & UI NAVIGATION GUIDE
+    DASHBOARD_GUIDE = {
+        "DASHBOARD": "The Pashu Poshana Dashboard is a 360° analytics tool. It has 5 views: **Overview** (Global metrics), **Supply** (Crop details), **Demand** (Animal details), **Risk** (Heatmaps), and **Predict** (AI Forecasts).",
+        "FILTER": "You can use the **Select District** dropdown at the top-right to filter all charts and KPIs for a specific area.",
+        "EXPORT": "To save data, use the **Export Report** button. It will download a CSV file of the current filtered data for your offline use.",
+        "NAVIGATE": "Use the sidebar on the left to switch between different analytical views like Demand Dynamics or Future Predictions.",
+        "PREDICTION": "The 'Future Predictions' view uses a 6-month projection model based on current consumption rates and seasonal biomass availability.",
+        "COLOR": "Green (🟢) signifies a Surplus or Safe status. Red (🔴) signifies a Deficit or High Risk. Yellow/Orange signifies stress levels.",
+        "PILL": "The 'Status Pills' summarize a district's condition into two simple states: SURPLUS (Safe) or DEFICIT (Action required).",
+        "KPI": "The KPI cards at the top show total Supply, Demand, and the resulting Gap for your selected region.",
+        "DOWNLOAD": "Look for the cloud icon or 'Export' button to download your analysis as a CSV file."
+    }
+
+    for key, help_text in DASHBOARD_GUIDE.items():
+        if key in clean_q:
+            return header + f"DASHBOARD GUIDE: {key}\n\n" + help_text + footer
+
+    # 8. INTENT: RANKING (ORDINAL)
     ORDINAL_MAP = {"FIRST": 0, "1ST": 0, "SECOND": 1, "2ND": 1, "THIRD": 2, "3RD": 2, "4TH": 3, "FIFTH": 4}
     rank_idx = -1
     for word, idx in ORDINAL_MAP.items():
