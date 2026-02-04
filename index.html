@@ -410,91 +410,58 @@
 
             <!-- View Sections -->
             <div id="view-overview" class="view-section">
-                <div id="ov-chart-card" class="bg-white p-6 border border-slate-200 rounded-xl shadow-sm mb-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h4 class="text-sm font-bold text-govt-navy uppercase tracking-wider">District-wise Supply vs
-                            Demand Comparison</h4>
-                        <div class="flex items-center space-x-2">
-                            <div class="flex space-x-4 text-[10px] font-bold text-slate-400 mr-4">
-                                <span class="flex items-center"><span
-                                        class="w-3 h-3 bg-yellow-400 mr-1 rounded-sm"></span>
-                                    SUPPLY</span>
-                                <span class="flex items-center"><span class="w-3 h-3 bg-red-500 mr-1 rounded-sm"></span>
-                                    DEMAND</span>
-                            </div>
-                            <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
-                                <button onclick="zoomChart('ov', 1.1)"
-                                    class="p-1 hover:bg-white rounded transition text-slate-500" title="Zoom In"><svg
-                                        xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                                    </svg></button>
-                                <button onclick="zoomChart('ov', 0.9)"
-                                    class="p-1 hover:bg-white rounded transition text-slate-500" title="Zoom Out"><svg
-                                        xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
-                                    </svg></button>
-                                <button onclick="toggleFullScreen('ov-chart-card')"
-                                    class="p-1 hover:bg-white rounded transition text-slate-500"
-                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                    </svg></button>
-                                <button onclick="downloadCanvas('ov-chart', 'supply_vs_demand')"
-                                    class="p-1 hover:bg-white rounded transition text-slate-500"
-                                    title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg></button>
-                            </div>
-                        </div>
-                    </div>
-                    <canvas id="ov-chart" height="350"></canvas>
-                </div>
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-                    <div id="ov-table-card"
-                        class="lg:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="bg-slate-50 px-6 py-4 flex justify-between items-center border-b border-slate-200">
-                            <h4 class="text-xs font-bold text-govt-navy uppercase">District Register</h4>
-                            <div class="flex items-center bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
-                                <button onclick="toggleFullScreen('ov-table-card')"
-                                    class="p-1 hover:bg-slate-50 rounded transition text-slate-500"
-                                    title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                    </svg></button>
-                                <button onclick="exportCSV()"
-                                    class="p-1 hover:bg-slate-50 rounded transition text-slate-500"
-                                    title="Export CSV"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg></button>
+                    <div id="ov-chart-card"
+                        class="lg:col-span-3 bg-white p-6 border border-slate-200 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-sm font-bold text-govt-navy uppercase tracking-wider">District-wise Supply
+                                vs
+                                Demand Comparison</h4>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex space-x-4 text-[10px] font-bold text-slate-400 mr-4">
+                                    <span class="flex items-center"><span
+                                            class="w-3 h-3 bg-yellow-400 mr-1 rounded-sm"></span>
+                                        SUPPLY</span>
+                                    <span class="flex items-center"><span
+                                            class="w-3 h-3 bg-red-500 mr-1 rounded-sm"></span>
+                                        DEMAND</span>
+                                </div>
+                                <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
+                                    <button onclick="zoomChart('ov', 1.1)"
+                                        class="p-1 hover:bg-white rounded transition text-slate-500"
+                                        title="Zoom In"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                        </svg></button>
+                                    <button onclick="zoomChart('ov', 0.9)"
+                                        class="p-1 hover:bg-white rounded transition text-slate-500"
+                                        title="Zoom Out"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                        </svg></button>
+                                    <button onclick="toggleFullScreen('ov-chart-card')"
+                                        class="p-1 hover:bg-white rounded transition text-slate-500"
+                                        title="Full Screen"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                        </svg></button>
+                                    <button onclick="downloadCanvas('ov-chart', 'supply_vs_demand')"
+                                        class="p-1 hover:bg-white rounded transition text-slate-500"
+                                        title="Download Image"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg></button>
+                                </div>
                             </div>
                         </div>
-                        <div class="max-h-96 overflow-y-auto">
-                            <table class="w-full text-left text-[11px]">
-                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
-                                    <tr>
-                                        <th class="px-6 py-4">District</th>
-                                        <th class="px-6 py-4 text-right">Supply (T)</th>
-                                        <th class="px-6 py-4 text-right">Demand (T)</th>
-                                        <th class="px-6 py-4 text-right">Balance (T)</th>
-                                        <th class="px-6 py-4 text-center">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="ov-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
-                            </table>
-                        </div>
+                        <canvas id="ov-chart" height="220"></canvas>
                     </div>
                     <div id="ov-pie-card"
-                        class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-4">
                             <h4 class="text-xs font-bold text-govt-navy uppercase">State Distribution</h4>
                             <div class="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
@@ -515,6 +482,43 @@
                             </div>
                         </div>
                         <canvas id="ov-pie" height="220"></canvas>
+                    </div>
+                </div>
+
+                <div id="ov-table-card"
+                    class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+                    <div class="bg-slate-50 px-6 py-4 flex justify-between items-center border-b border-slate-200">
+                        <h4 class="text-xs font-bold text-govt-navy uppercase">District Register</h4>
+                        <div class="flex items-center bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                            <button onclick="toggleFullScreen('ov-table-card')"
+                                class="p-1 hover:bg-slate-50 rounded transition text-slate-500" title="Full Screen"><svg
+                                    xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                </svg></button>
+                            <button onclick="exportCSV()"
+                                class="p-1 hover:bg-slate-50 rounded transition text-slate-500" title="Export CSV"><svg
+                                    xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg></button>
+                        </div>
+                    </div>
+                    <div class="max-h-96 overflow-y-auto">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
+                                <tr>
+                                    <th class="px-6 py-4">District</th>
+                                    <th class="px-6 py-4 text-right">Supply (T)</th>
+                                    <th class="px-6 py-4 text-right">Demand (T)</th>
+                                    <th class="px-6 py-4 text-right">Balance (T)</th>
+                                    <th class="px-6 py-4 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ov-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -943,6 +947,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
                         y: { beginAtZero: true, ticks: { callback: v => formatTons(v) } }
