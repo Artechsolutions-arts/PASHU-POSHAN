@@ -917,16 +917,15 @@
         function renderOverview(data) {
             // Table
             const tb = document.getElementById('ov-table-body');
-            tb.innerHTML = '';
-            data.sort((a, b) => a.Balance_Tons - b.Balance_Tons).forEach(r => {
-                tb.innerHTML += `<tr>
+            tb.innerHTML = data.sort((a, b) => a.Balance_Tons - b.Balance_Tons).map(r => `
+                <tr>
                     <td class="px-6 py-4 font-bold text-govt-navy uppercase">${r.District}</td>
                     <td class="px-6 py-4 text-right">${formatTons(r.Total_Fodder_Tons)}</td>
                     <td class="px-6 py-4 text-right">${formatTons(r.Total_Demand_Tons)}</td>
                     <td class="px-6 py-4 text-right font-black ${r.Balance_Tons < 0 ? 'text-rose-600' : 'text-emerald-700'}">${formatTons(r.Balance_Tons)}</td>
                     <td class="px-6 py-4 text-center"><span class="status-pill status-${r.Status.toLowerCase()}">${r.Status}</span></td>
-                </tr>`;
-            });
+                </tr>
+            `).join('');
 
             // Chart
             const ctx = document.getElementById('ov-chart').getContext('2d');
@@ -1092,14 +1091,14 @@
             });
 
             const list = document.getElementById('dm-list');
-            list.innerHTML = '';
             let mandals = currentRegion === 'all' ? raw.mandal : raw.mandal.filter(m => m.District === currentRegion);
-            mandals.forEach(m => {
-                list.innerHTML += `<div class="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
+
+            list.innerHTML = mandals.map(m => `
+                <div class="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
                     <span class="font-bold text-govt-navy uppercase">${m.Mandal} <span class="text-slate-400 font-normal">(${m.District})</span></span>
                     <span class="font-mono text-slate-500 font-black">${formatTons(m.Total_Demand_Tons)} T</span>
-                </div>`;
-            });
+                </div>
+            `).join('');
         }
 
         function renderRisk() {
@@ -1112,15 +1111,15 @@
                 return;
             }
 
-            riskData.sort((a, b) => a.Balance_Tons - b.Balance_Tons).forEach(d => {
+            grid.innerHTML = riskData.sort((a, b) => a.Balance_Tons - b.Balance_Tons).map(d => {
                 const sIdx = (d.Total_Fodder_Tons / d.Total_Demand_Tons * 100).toFixed(0);
-                grid.innerHTML += `<div class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm border-l-8 border-l-rose-600">
+                return `<div class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm border-l-8 border-l-rose-600">
                     <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest mb-1">${d.District}</p>
                     <h5 class="text-2xl font-black text-rose-800">${formatTons(Math.abs(d.Balance_Tons))} <span class="text-[10px] font-bold text-rose-400">SHORTAGE</span></h5>
                     <div class="mt-4"><div class="flex justify-between text-[9px] font-bold mb-1"><span>SUFFICIENCY INDEX</span><span>${sIdx}%</span></div>
                     <div class="w-full bg-rose-50 h-2 rounded-full overflow-hidden"><div class="bg-rose-500 h-full" style="width: ${sIdx}%"></div></div></div>
                 </div>`;
-            });
+            }).join('');
         }
 
         function renderPredict() {
@@ -1210,10 +1209,9 @@
                     : raw.gap.filter(d => d.District === currentRegion);
 
                 const container = document.getElementById('pr-districts');
-                container.innerHTML = '';
-                topRisk.forEach(r => {
+                container.innerHTML = topRisk.map(r => {
                     const perc = Math.floor(Math.random() * 20) + 10;
-                    container.innerHTML += `
+                    return `
                         <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                             <div>
                                 <p class="font-bold text-govt-navy uppercase text-[10px]">${r.District}</p>
@@ -1227,7 +1225,7 @@
                             </div>
                         </div>
                     `;
-                });
+                }).join('');
 
                 // Populate Dynamic Recommendations
                 const recList = document.getElementById('pr-recs');
