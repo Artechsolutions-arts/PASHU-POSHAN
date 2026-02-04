@@ -19,21 +19,10 @@ ASSUMPTIONS = {
 }
 
 def get_data_path(filename):
-    # 1. Try absolute path relative to THIS file (api/ai_engine.py)
-    # This is the most reliable for Vercel/Railway
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_in_api = os.path.join(current_dir, filename)
-    if os.path.exists(file_in_api):
-        return file_in_api
-        
-    # 2. Try immediate local check (CWD)
-    if os.path.exists(filename): 
-        return filename
-        
-    # 3. Try Root (Up one level)
-    base_dir = os.path.dirname(current_dir)
-    file_in_root = os.path.join(base_dir, filename)
-    return file_in_root if os.path.exists(file_in_root) else filename
+    if os.path.exists(filename): return filename
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    abs_path = os.path.join(base_dir, filename)
+    return abs_path if os.path.exists(abs_path) else filename
 
 def compute_uncertainty(df):
     """Calculates a certainty score based on data density and variance."""
