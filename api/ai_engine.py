@@ -159,28 +159,44 @@ def get_local_response(prompt, df, custom_context=None):
         if key in clean_q:
             return header + f"DASHBOARD GUIDE: {key}\n\n" + help_text + footer
 
-    # 8. INTENT: RANKING (ORDINAL)
-    ORDINAL_MAP = {"FIRST": 0, "1ST": 0, "SECOND": 1, "2ND": 1, "THIRD": 2, "3RD": 2, "4TH": 3, "FIFTH": 4}
+    # 7. INTENT: RANKING (ORDINAL & SUPERLATIVE)
+    ORDINAL_MAP = {
+        "FIRST": 0, "1ST": 0, "HIGHEST": 0, "MOST": 0, "MAX": 0, "TOP": 0,
+        "SECOND": 1, "2ND": 1, "THIRD": 2, "3RD": 2, "4TH": 3, "FIFTH": 4
+    }
     rank_idx = -1
     for word, idx in ORDINAL_MAP.items():
-        if word in clean_q: rank_idx = idx; break
+        if word in clean_q: 
+            rank_idx = idx
+            break
     
     if rank_idx != -1:
+        # Default to shortage/risk
         sort_col = 'Balance_Tons'
-        ascending = True # default to shortage
-        label = "SHORTAGE RANKING"
-        if any(x in clean_q for x in ["SURPLUS", "BEST", "TOP", "SUPPLY"]):
+        ascending = True 
+        label = "CRITICAL RANKING"
+
+        # Handle Specific Metrics
+        if "DEMAND" in clean_q or "NEED" in clean_q:
+            sort_col = 'Total_Demand_Tons'
             ascending = False
-            label = "RESOURCE RANKING"
-            sort_col = 'Total_Fodder_Tons' if "SUPPLY" in clean_q else 'Balance_Tons'
+            label = "DEMAND RANKING"
+        elif "SUPPLY" in clean_q or "FOOD" in clean_q or "AVAILABLE" in clean_q:
+            sort_col = 'Total_Fodder_Tons'
+            ascending = False
+            label = "SUPPLY RANKING"
+        elif any(x in clean_q for x in ["SURPLUS", "BEST", "SAFE"]):
+            sort_col = 'Balance_Tons'
+            ascending = False
+            label = "SURPLUS RANKING"
         
         sorted_df = df.sort_values(sort_col, ascending=ascending)
         if rank_idx < len(sorted_df):
             row = sorted_df.iloc[rank_idx]
             return header + f"{label}: #{rank_idx+1}\n\n" + \
                 f"District: **{row['District'].upper()}**\n" + \
-                f"Current Status: {fmt(row[sort_col])} ({row['Status']})\n" + \
-                f"Overall Need: {fmt(row['Total_Demand_Tons'])}" + footer
+                f"Metric: **{fmt(row[sort_col])}**\n" + \
+                f"Current Status: {row['Status']}" + footer
 
     # 8. ENTITY: DISTRICT SPECIFIC DEEP DIVE
     # Use a custom fuzzy match for fragmented district names
