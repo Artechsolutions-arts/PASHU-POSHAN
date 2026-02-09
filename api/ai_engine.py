@@ -160,8 +160,6 @@ def get_local_response(prompt, df, custom_context=None):
             return header + f"DASHBOARD GUIDE: {key}\n\n" + help_text + footer
 
     # 7. INTENT: RANKING (ORDINAL & SUPERLATIVE)
-    # Check specific ordinals first so "SECOND HIGHEST" matches "SECOND" (index 1) 
-    # instead of "HIGHEST" (index 0).
     ORDINAL_MAP = {
         "FIFTH": 4, "5TH": 4, "FOURTH": 3, "4TH": 3, "THIRD": 2, "3RD": 2,
         "SECOND": 1, "2ND": 1, "FIRST": 0, "1ST": 0, "HIGHEST": 0, "MOST": 0, 
@@ -173,14 +171,20 @@ def get_local_response(prompt, df, custom_context=None):
             rank_idx = idx
             break
     
-    if rank_idx != -1:
+    # Extra check for superlatives/extremes even without ordinals
+    extreme_keywords = ["HIGHEST", "LOWEST", "MOST", "LEAST", "MAX", "MIN", "NOT SUPPLYING", "NOT FEEDING", "WORST", "BEST", "POOR"]
+    is_extreme_query = any(x in clean_q for x in extreme_keywords)
+    
+    if rank_idx != -1 or is_extreme_query:
+        if rank_idx == -1: rank_idx = 0 # Default to #1 if a superlative was used without an ordinal
+        
         # Default sort
         sort_col = 'Balance_Tons'
         ascending = True # Default to critical (shortage)
         label = "RANKING"
 
         # Refine Sorting Logic
-        is_lowest = any(x in clean_q for x in ["LOWEST", "LEAST", "BOTTOM", "SMALLEST", "MIN"])
+        is_lowest = any(x in clean_q for x in ["LOWEST", "LEAST", "BOTTOM", "SMALLEST", "MIN", "NOT", "POOR"])
         is_highest = any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX", "GREATEST", "BIGGEST"])
 
         if "DEMAND" in clean_q or "NEED" in clean_q:
