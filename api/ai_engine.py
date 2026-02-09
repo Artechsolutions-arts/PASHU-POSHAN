@@ -159,6 +159,12 @@ def get_local_response(prompt, df, custom_context=None):
 
     # 7. DASHBOARD & UI NAVIGATION GUIDE
     DASHBOARD_GUIDE = {
+        "FEATURES": "**FORAGE (Pashu Poshana) Project Capabilities:**\n\n" + \
+                    "1. **Sufficiency Index:** A single live score indicating fodder adequacy for any region.\n" + \
+                    "2. **Predictive Forecasting:** AI-driven 6-month outlook to identify shortages before they occur.\n" + \
+                    "3. **Logistics Optimization:** Dynamic identification of Surplus Hubs and Deficit Zones for resource movement.\n" + \
+                    "4. **Stress Test Scenarios:** 'What-If' simulations for rainfall reduction and drought impact analysis.\n" + \
+                    "5. **Pashu Sahayak (AI Assistant):** Conversational data intelligence for senior administrative decision-making.",
         "DASHBOARD": "The Pashu Poshana Dashboard is a 360° analytics tool. It has 5 views: **Overview** (Global metrics), **Supply** (Crop details), **Demand** (Animal details), **Risk** (Heatmaps), and **Predict** (AI Forecasts).",
         "FILTER": "You can use the **Select District** dropdown at the top-right to filter all charts and KPIs for a specific area.",
         "EXPORT": "To save data, use the **Export Report** button. It will download a CSV file of the current filtered data for your offline use.",
