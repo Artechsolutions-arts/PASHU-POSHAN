@@ -1226,30 +1226,45 @@
 
                 // Populate Dynamic Recommendations
                 const recList = document.getElementById('pr-recs');
-                const headerStyle = "block font-bold text-emerald-900 uppercase text-[10px] mb-0.5 tracking-wider";
-                const contentStyle = "block text-emerald-800 leading-relaxed";
+                const headerStyle = "block font-extrabold text-[#064e3b] uppercase text-[10px] tracking-wider mb-1";
+                const contentStyle = "block text-[#065f46] leading-relaxed text-[11px]";
 
                 if (currentRegion === 'all') {
                     recList.innerHTML = `
-                        <li class="flex items-start pb-2">
-                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
-                            <div>
-                                <span class="${headerStyle}">Redistribution Plan</span>
-                                <span class="${contentStyle}">Priority transfer from <b class="bg-emerald-100 px-1 rounded mx-0.5 text-emerald-900">${topSurplus.District}</b> to <b class="bg-rose-100 px-1 rounded mx-0.5 text-rose-900">${topDeficit.District}</b> to bridge a <b>${formatTons(Math.abs(topDeficit.Balance_Tons))}</b> gap.</span>
+                        <li class="pb-4 border-b border-emerald-100 last:border-0">
+                            <div class="flex items-start">
+                                <span class="mr-3 text-emerald-600 font-bold mt-0.5">▶</span>
+                                <div>
+                                    <span class="${headerStyle}">REDISTRIBUTION STRATEGY</span>
+                                    <span class="${contentStyle}">
+                                        Priority transfer from <b class="bg-emerald-200/50 px-1.5 py-0.5 rounded text-emerald-900">${topSurplus.District.replace(/_/g, ' ')}</b> 
+                                        to <b class="bg-rose-100 px-1.5 py-0.5 rounded text-rose-900">${topDeficit.District.replace(/_/g, ' ')}</b> 
+                                        to bridge a <b>${formatTons(Math.abs(topDeficit.Balance_Tons))}</b> gap.
+                                    </span>
+                                </div>
                             </div>
                         </li>
-                        <li class="flex items-start pb-2">
-                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
-                            <div>
-                                <span class="${headerStyle}">Resource Hubs</span>
-                                <span class="${contentStyle}">Leverage <b class="bg-blue-50 px-1 rounded mx-0.5 text-blue-900">${sortedAll[1].District}</b> as a secondary storage cluster for western regions.</span>
+                        <li class="pb-4 border-b border-emerald-100 last:border-0 pt-2">
+                            <div class="flex items-start">
+                                <span class="mr-3 text-emerald-600 font-bold mt-0.5">▶</span>
+                                <div>
+                                    <span class="${headerStyle}">REGIONAL RESOURCE HUBS</span>
+                                    <span class="${contentStyle}">
+                                        Leverage <b class="bg-blue-100 px-1.5 py-0.5 rounded text-blue-900">${sortedAll[1].District.replace(/_/g, ' ')}</b> 
+                                        as a secondary storage cluster to support western deficit regions.
+                                    </span>
+                                </div>
                             </div>
                         </li>
-                        <li class="flex items-start">
-                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
-                            <div>
-                                <span class="${headerStyle}">Administrative Action</span>
-                                <span class="${contentStyle}">Release 15% strategic buffer stocks in Month 2 to mitigate the predicted statewide deficit of <b>${formatTons(Math.abs(raw.gap.reduce((a, b) => a + b.Balance_Tons, 0)))}</b>.</span>
+                        <li class="pt-2">
+                            <div class="flex items-start">
+                                <span class="mr-3 text-emerald-600 font-bold mt-0.5">▶</span>
+                                <div>
+                                    <span class="${headerStyle}">ADMINISTRATIVE INTERVENTION</span>
+                                    <span class="${contentStyle}">
+                                        Release 15% strategic buffer stocks in Month 2 to mitigate predicted statewide deficit of <b>${formatTons(Math.abs(raw.gap.reduce((a, b) => a + b.Balance_Tons, 0)))}</b>.
+                                    </span>
+                                </div>
                             </div>
                         </li>
                     `;
@@ -1257,25 +1272,35 @@
                     const d = raw.gap.find(x => x.District === currentRegion);
                     const isDeficit = d.Balance_Tons < 0;
                     recList.innerHTML = `
-                        <li class="flex items-start pb-2">
-                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
-                            <div>
-                                <span class="${headerStyle}">${isDeficit ? 'Inbound Logistics' : 'Outbound Logistics'}</span>
-                                <span class="${contentStyle}">${isDeficit ? `Coordinate supply chains from the <b class="text-emerald-900">${topSurplus.District}</b> hub.` : `Designate as a Supply Hub to support the <b class="text-rose-900">${topDeficit.District}</b> deficit.`}</span>
+                        <li class="pb-4 border-b border-emerald-100 last:border-0">
+                            <div class="flex items-start">
+                                <span class="mr-3 text-emerald-600 font-bold mt-0.5">▶</span>
+                                <div>
+                                    <span class="${headerStyle}">${isDeficit ? 'INBOUND LOGISTICS' : 'OUTBOUND LOGISTICS'}</span>
+                                    <span class="${contentStyle}">
+                                        ${isDeficit ? `Coordinate supply chains from the <b class="text-emerald-900">${topSurplus.District.replace(/_/g, ' ')}</b> hub.` : `Designate as a Supply Hub to support the <b class="text-rose-900">${topDeficit.District.replace(/_/g, ' ')}</b> deficit.`}
+                                    </span>
+                                </div>
                             </div>
                         </li>
-                        <li class="flex items-start pb-2">
-                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
-                            <div>
-                                <span class="${headerStyle}">Infrastructure Priority</span>
-                                <span class="${contentStyle}">${isDeficit ? 'Establish regional distribution centers' : 'Maximize silo storage capacity'} for <b>${currentRegion}</b> situational load.</span>
+                        <li class="pb-4 border-b border-emerald-100 last:border-0 pt-2">
+                            <div class="flex items-start">
+                                <span class="mr-3 text-emerald-600 font-bold mt-0.5">▶</span>
+                                <div>
+                                    <span class="${headerStyle}">INFRASTRUCTURE PRIORITY</span>
+                                    <span class="${contentStyle}">
+                                        ${isDeficit ? 'Establish regional distribution centers' : 'Maximize silo storage capacity'} for <b>${currentRegion}</b> situational load.
+                                    </span>
+                                </div>
                             </div>
                         </li>
-                        <li class="flex items-start">
-                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
-                            <div>
-                                <span class="${headerStyle}">Risk Monitoring</span>
-                                <span class="${contentStyle}">Maintain a 3-month rolling reserve to handle predicted seasonal dips in fodder production.</span>
+                        <li class="pt-2">
+                            <div class="flex items-start">
+                                <span class="mr-3 text-emerald-600 font-bold mt-0.5">▶</span>
+                                <div>
+                                    <span class="${headerStyle}">RISK MONITORING</span>
+                                    <span class="${contentStyle}">Maintain a 3-month rolling reserve to handle predicted seasonal dips in fodder production.</span>
+                                </div>
                             </div>
                         </li>
                     `;
