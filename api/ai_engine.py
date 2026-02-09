@@ -325,6 +325,21 @@ def get_local_response(prompt, df, custom_context=None):
     target_dist = smart_match(clean_q, all_districts)
     if target_dist:
         row = df[df['District'] == target_dist].iloc[0]
+        # Check if they specifically asked about crop deficit in this district
+        if supply_df is not None and any(x in clean_q for x in ["CROP", "FODDER"]) and any(x in clean_q for x in ["DEFICIT", "SHORTAGE", "LOW", "GAP"]):
+            s_row = supply_df[supply_df['District'] == target_dist].iloc[0]
+            crops = ['Paddy','Maize','Groundnut','Sugarcane','Jowar','Bajra','Ragi']
+            
+            # Find the crop with the highest deficit relative to state average
+            state_avgs = {c: supply_df[c].mean() for c in crops}
+            crop_diffs = {c: s_row[c] - state_avgs[c] for c in crops}
+            worst_crop = min(crop_diffs, key=crop_diffs.get)
+            
+            return header + f"DISTRICT CROP INTELLIGENCE: {target_dist.upper()}\n\n" + \
+                f"Deficit Source: **{worst_crop.upper()}**\n" + \
+                f"Local Production: {fmt(s_row[worst_crop])} vs State Avg: {fmt(state_avgs[worst_crop])}\n\n" + \
+                f"Analysis: The fodder shortage in {target_dist} is significantly driven by underperformance in {worst_crop} biomass. We recommend investigating soil moisture levels or shifting to drought-resistant strains." + footer
+
         # Get extra context if detail files exist
         context_str = ""
         if supply_df is not None:
