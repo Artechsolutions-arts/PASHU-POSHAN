@@ -208,7 +208,16 @@ def get_local_response(prompt, df, custom_context=None):
                 f"Metric: **{fmt(row[sort_col])}**\n" + \
                 f"Current Status: {row['Status']}" + footer
 
-    # 8. INTENT: PREDICTION & FORECASTING
+    # 8. INTENT: DEFICIT LIST (WHICH DISTRICTS)
+    if df is not None and any(x in clean_q for x in ["DEFICIT", "SHORTAGE", "GAP", "AT RISK", "LIST"]) and ("WHICH" in clean_q or "LIST" in clean_q or "SHOW" in clean_q):
+        def_df = df[df['Balance_Tons'] < 0].sort_values('Balance_Tons')
+        if not def_df.empty:
+            d_list = "\n".join([f"{i+1}. **{r['District']}** ({fmt(r['Balance_Tons'])})" for i, r in enumerate(def_df.to_dict('records'))])
+            return header + f"🚩 CRITICAL SHORTAGE LIST ({len(def_df)} Districts)\n\n" + \
+                "The following areas report a negative fodder balance:\n\n" + d_list + \
+                "\n\n**Recommendation:** Prioritize logistical movement to top 3 zones immediately." + footer
+
+    # 9. INTENT: PREDICTION & FORECASTING
     if df is not None and any(x in clean_q for x in ["PREDICT", "FUTURE", "FORECAST", "NEXT", "OUTLOOK", "QUARTER"]):
         target_name = None
         # Check if they asked about a specific district
