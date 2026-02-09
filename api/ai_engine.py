@@ -235,7 +235,33 @@ def get_local_response(prompt, df, custom_context=None):
         p_content += "\n**GOVERNANCE ADVICE:** " + ("Resource redistribution is required within 90 days." if current_stock < 0 else "Maintain current storage levels.")
         return header + p_title + p_content + footer
 
-    # 9. ENTITY: DISTRICT SPECIFIC DEEP DIVE
+    # 9. INTENT: WHAT-IF SCENARIO ANALYSIS (STRESS TEST)
+    if any(x in clean_q for x in ["RAIN", "DROUGHT", "SCENARIO", "CLIMATE", "REDUCE"]):
+        import re
+        # Extract percentage if mentioned (e.g., "20%")
+        pct_match = re.search(r'(\d+)\s*%', clean_q)
+        drop_pct = int(pct_match.group(1)) if pct_match else 20 # default to 20%
+        
+        total_s = df['Total_Fodder_Tons'].sum()
+        total_d = df['Total_Demand_Tons'].sum()
+        
+        hypo_s = total_s * (1 - (drop_pct/100))
+        hypo_bal = hypo_s - total_d
+        
+        s_title = f"📉 SCENARIO STRESS TEST: {drop_pct}% RESOURCE DROP\n\n"
+        s_content = f"Simulating impact on biomass generation (Rainfall/Drought factor)...\n\n"
+        s_content += f"• Current Supply: **{fmt(total_s)}**\n"
+        s_content += f"• Hypothetical Supply: **{fmt(hypo_s)}**\n"
+        s_content += f"• New Resource Gap: **{fmt(hypo_bal)}**\n\n"
+        
+        s_content += "**GOVERNANCE INTERVENTION PLAN:**\n"
+        s_content += "1. **Emergency Buffer:** Release 15% of strategic dry matter reserves immediately.\n"
+        s_content += "2. **Inter-State Procurement:** Bridge the additional gap via trade orders from neighboring surplus states.\n"
+        s_content += "3. **Cattle Camps:** Pre-identify 50 high-priority cattle camp sites in critical deficit zones."
+        
+        return header + s_title + s_content + footer
+
+    # 10. ENTITY: DISTRICT SPECIFIC DEEP DIVE
     # Use a custom fuzzy match for fragmented district names
     def smart_match(q, dists):
         q_norm = q.replace(" ", "").upper()
