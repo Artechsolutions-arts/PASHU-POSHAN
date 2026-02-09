@@ -208,7 +208,34 @@ def get_local_response(prompt, df, custom_context=None):
                 f"Metric: **{fmt(row[sort_col])}**\n" + \
                 f"Current Status: {row['Status']}" + footer
 
-    # 8. ENTITY: DISTRICT SPECIFIC DEEP DIVE
+    # 8. INTENT: PREDICTION & FORECASTING
+    if df is not None and any(x in clean_q for x in ["PREDICT", "FUTURE", "FORECAST", "NEXT", "OUTLOOK", "QUARTER"]):
+        target_name = None
+        # Check if they asked about a specific district
+        for d in all_districts:
+            if d.upper().replace(" ", "") in clean_q.replace(" ", ""):
+                target_name = d
+                break
+        
+        target_df = df if target_name is None else df[df['District'] == target_name]
+        total_s = target_df['Total_Fodder_Tons'].sum()
+        total_d = target_df['Total_Demand_Tons'].sum()
+        monthly_burn = total_d / 12
+        
+        p_title = f"🔮 FUTURE FORECAST: {target_name.upper() if target_name else 'STATEWIDE'}\n\n"
+        p_content = f"Analyzing consumption trends... Monthly burn rate: ~{fmt(monthly_burn)}\n\n"
+        p_content += "| Period | Est. Stock | Status |\n|---|---|---|\n"
+        
+        current_stock = total_s
+        for i in range(1, 7):
+            current_stock -= monthly_burn
+            status = "🟢 SAFE" if current_stock > 0 else "🔴 SHORTAGE"
+            p_content += f"| Month {i} | {fmt(max(0, current_stock))} | {status} |\n"
+        
+        p_content += "\n**GOVERNANCE ADVICE:** " + ("Resource redistribution is required within 90 days." if current_stock < 0 else "Maintain current storage levels.")
+        return header + p_title + p_content + footer
+
+    # 9. ENTITY: DISTRICT SPECIFIC DEEP DIVE
     # Use a custom fuzzy match for fragmented district names
     def smart_match(q, dists):
         q_norm = q.replace(" ", "").upper()
