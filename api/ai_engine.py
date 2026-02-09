@@ -160,9 +160,12 @@ def get_local_response(prompt, df, custom_context=None):
             return header + f"DASHBOARD GUIDE: {key}\n\n" + help_text + footer
 
     # 7. INTENT: RANKING (ORDINAL & SUPERLATIVE)
+    # Check specific ordinals first so "SECOND HIGHEST" matches "SECOND" (index 1) 
+    # instead of "HIGHEST" (index 0).
     ORDINAL_MAP = {
-        "FIRST": 0, "1ST": 0, "HIGHEST": 0, "MOST": 0, "MAX": 0, "TOP": 0,
-        "SECOND": 1, "2ND": 1, "THIRD": 2, "3RD": 2, "4TH": 3, "FIFTH": 4
+        "FIFTH": 4, "5TH": 4, "FOURTH": 3, "4TH": 3, "THIRD": 2, "3RD": 2,
+        "SECOND": 1, "2ND": 1, "FIRST": 0, "1ST": 0, "HIGHEST": 0, "MOST": 0, 
+        "MAX": 0, "TOP": 0, "LOWEST": 0, "LEAST": 0
     }
     rank_idx = -1
     for word, idx in ORDINAL_MAP.items():
@@ -171,24 +174,27 @@ def get_local_response(prompt, df, custom_context=None):
             break
     
     if rank_idx != -1:
-        # Default to shortage/risk
+        # Default sort
         sort_col = 'Balance_Tons'
-        ascending = True 
-        label = "CRITICAL RANKING"
+        ascending = True # Default to critical (shortage)
+        label = "RANKING"
 
-        # Handle Specific Metrics
+        # Refine Sorting Logic
+        is_lowest = any(x in clean_q for x in ["LOWEST", "LEAST", "BOTTOM", "SMALLEST", "MIN"])
+        is_highest = any(x in clean_q for x in ["HIGHEST", "MOST", "TOP", "MAX", "GREATEST", "BIGGEST"])
+
         if "DEMAND" in clean_q or "NEED" in clean_q:
             sort_col = 'Total_Demand_Tons'
-            ascending = False
-            label = "DEMAND RANKING"
+            ascending = True if is_lowest else False
+            label = f"{'LOWEST' if is_lowest else 'HIGHEST'} DEMAND"
         elif "SUPPLY" in clean_q or "FOOD" in clean_q or "AVAILABLE" in clean_q:
             sort_col = 'Total_Fodder_Tons'
-            ascending = False
-            label = "SUPPLY RANKING"
+            ascending = True if is_lowest else False
+            label = f"{'LOWEST' if is_lowest else 'HIGHEST'} SUPPLY"
         elif any(x in clean_q for x in ["SURPLUS", "BEST", "SAFE"]):
             sort_col = 'Balance_Tons'
-            ascending = False
-            label = "SURPLUS RANKING"
+            ascending = False if not is_lowest else True
+            label = f"{'LOWEST' if is_lowest else 'HIGHEST'} SURPLUS"
         
         sorted_df = df.sort_values(sort_col, ascending=ascending)
         if rank_idx < len(sorted_df):
