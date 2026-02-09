@@ -1226,19 +1226,58 @@
 
                 // Populate Dynamic Recommendations
                 const recList = document.getElementById('pr-recs');
+                const headerStyle = "block font-bold text-emerald-900 uppercase text-[10px] mb-0.5 tracking-wider";
+                const contentStyle = "block text-emerald-800 leading-relaxed";
+
                 if (currentRegion === 'all') {
                     recList.innerHTML = `
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Redistribution Plan:</strong> Priority transfer from <span class="bg-emerald-100 px-1 rounded font-bold">${topSurplus.District}</span> to <span class="bg-rose-100 px-1 rounded font-bold">${topDeficit.District}</span> to bridge ${formatTons(Math.abs(topDeficit.Balance_Tons))} gap.</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Resource Hubs:</strong> Leverage <span class="bg-blue-50 px-1 rounded font-bold">${sortedAll[1].District}</span> as a secondary storage cluster for western regions.</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Administrative:</strong> Release 15% strategic buffer stocks in Month 2 to mitigate predicted statewide deficit of ${formatTons(Math.abs(raw.gap.reduce((a, b) => a + b.Balance_Tons, 0)))}.</li>
+                        <li class="flex items-start pb-2">
+                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
+                            <div>
+                                <span class="${headerStyle}">Redistribution Plan</span>
+                                <span class="${contentStyle}">Priority transfer from <b class="bg-emerald-100 px-1 rounded mx-0.5 text-emerald-900">${topSurplus.District}</b> to <b class="bg-rose-100 px-1 rounded mx-0.5 text-rose-900">${topDeficit.District}</b> to bridge a <b>${formatTons(Math.abs(topDeficit.Balance_Tons))}</b> gap.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start pb-2">
+                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
+                            <div>
+                                <span class="${headerStyle}">Resource Hubs</span>
+                                <span class="${contentStyle}">Leverage <b class="bg-blue-50 px-1 rounded mx-0.5 text-blue-900">${sortedAll[1].District}</b> as a secondary storage cluster for western regions.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
+                            <div>
+                                <span class="${headerStyle}">Administrative Action</span>
+                                <span class="${contentStyle}">Release 15% strategic buffer stocks in Month 2 to mitigate the predicted statewide deficit of <b>${formatTons(Math.abs(raw.gap.reduce((a, b) => a + b.Balance_Tons, 0)))}</b>.</span>
+                            </div>
+                        </li>
                     `;
                 } else {
                     const d = raw.gap.find(x => x.District === currentRegion);
                     const isDeficit = d.Balance_Tons < 0;
                     recList.innerHTML = `
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">${isDeficit ? 'Inbound Logistics' : 'Outbound Logistics'}:</strong> ${isDeficit ? `Coordinate supply chains from **${topSurplus.District}** hub.` : `Designate as a Supply Hub to support **${topDeficit.District}** deficit.`}</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Infrastructure:</strong> ${isDeficit ? 'Establish 4 regional distribution centers' : 'Maximize silo storage capacity'} for <strong>${currentRegion}</strong> situational load.</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Monitoring:</strong> Maintain a 3-month rolling reserve to handle predicted seasonal dips.</li>
+                        <li class="flex items-start pb-2">
+                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
+                            <div>
+                                <span class="${headerStyle}">${isDeficit ? 'Inbound Logistics' : 'Outbound Logistics'}</span>
+                                <span class="${contentStyle}">${isDeficit ? `Coordinate supply chains from the <b class="text-emerald-900">${topSurplus.District}</b> hub.` : `Designate as a Supply Hub to support the <b class="text-rose-900">${topDeficit.District}</b> deficit.`}</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start pb-2">
+                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
+                            <div>
+                                <span class="${headerStyle}">Infrastructure Priority</span>
+                                <span class="${contentStyle}">${isDeficit ? 'Establish regional distribution centers' : 'Maximize silo storage capacity'} for <b>${currentRegion}</b> situational load.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-3 mt-1 text-emerald-500 font-bold">▶</span>
+                            <div>
+                                <span class="${headerStyle}">Risk Monitoring</span>
+                                <span class="${contentStyle}">Maintain a 3-month rolling reserve to handle predicted seasonal dips in fodder production.</span>
+                            </div>
+                        </li>
                     `;
                 }
             });
