@@ -208,7 +208,30 @@ def get_local_response(prompt, df, custom_context=None):
                 f"Metric: **{fmt(row[sort_col])}**\n" + \
                 f"Current Status: {row['Status']}" + footer
 
-    # 8. INTENT: DEFICIT LIST (WHICH DISTRICTS)
+    # 9. INTENT: LOGISTICS ADVISOR (REDISTRIBUTION)
+    if any(x in clean_q for x in ["DISTRIBUTE", "MOVE", "TRANSPORT", "LOGISTIC", "SEND", "SUPPLY TO"]):
+        surplus_df = df[df['Balance_Tons'] > 0].sort_values('Balance_Tons', ascending=False).head(3)
+        deficit_df = df[df['Balance_Tons'] < 0].sort_values('Balance_Tons').head(3)
+        
+        l_title = "🚚 LOGISTICS STRATEGY: STATEWIDE REDISTRIBUTION\n\n"
+        l_content = "Yes, redistribution is the primary governance intervention recommended by the FORAGE system.\n\n"
+        
+        l_content += "**📍 KEY SUPPLY HUBS (SURPLUS):**\n"
+        for _, r in surplus_df.iterrows():
+            l_content += f"- **{r['District']}**: +{fmt(r['Balance_Tons'])}\n"
+            
+        l_content += "\n**🚩 PRIORITY DEFICIT ZONES:**\n"
+        for _, r in deficit_df.iterrows():
+            l_content += f"- **{r['District']}**: {fmt(r['Balance_Tons'])}\n"
+            
+        l_content += "\n**STRATEGIC PLAN:**\n"
+        l_content += f"1. Initiate transport from **{surplus_df.iloc[0]['District']}** to **{deficit_df.iloc[0]['District']}** to bridge the largest gap.\n"
+        l_content += f"2. Utilize **{surplus_df.iloc[1]['District']}** as a secondary hub for **{deficit_df.iloc[1]['District']}**.\n"
+        l_content += "3. Mobilize regional fodder banks in Surplus zones to create a 30-day buffer for neighboring deficit areas."
+        
+        return header + l_title + l_content + footer
+
+    # 10. INTENT: DEFICIT LIST (WHICH DISTRICTS)
     if df is not None and any(x in clean_q for x in ["DEFICIT", "SHORTAGE", "GAP", "AT RISK", "LIST"]) and ("WHICH" in clean_q or "LIST" in clean_q or "SHOW" in clean_q):
         def_df = df[df['Balance_Tons'] < 0].sort_values('Balance_Tons')
         if not def_df.empty:
