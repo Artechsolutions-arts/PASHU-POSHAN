@@ -101,6 +101,21 @@ def get_local_response(prompt, df, custom_context=None):
 
     # 4. INTENT: CROP ANALYSIS
     if supply_df is not None:
+        # Check for general crop shortage/lowest production query
+        if any(x in clean_q for x in ["SHORTAGE", "LOWEST", "LEAST"]) and ("CROP" in clean_q or "FODDER" in clean_q):
+            # Calculate totals and filter out 0-value items (placeholders)
+            crop_totals = {col: supply_df[col].sum() for col in set(CROP_MAP.values())}
+            active_crops = {k: v for k, v in crop_totals.items() if v > 0}
+            
+            if active_crops:
+                min_crop = min(active_crops, key=active_crops.get)
+                min_val = active_crops[min_crop]
+                return header + f"CRITICAL CROP ANALYSIS: {min_crop.upper()}\n\n" + \
+                    f"State Total: **{fmt(min_val)}**\n" + \
+                    f"Status: **Lowest Active Fodder Source**\n\n" + \
+                    f"Insight: {min_crop} provides the smallest volume of biomass to our state's total fodder pool. In districts with high cattle demand, relying on {min_crop} alone creates a high vulnerability. We recommend supplementing with Paddy straw or Maize silage." + footer
+
+        # Existing individual crop lookup
         for keyword, col in CROP_MAP.items():
             if keyword in clean_q:
                 # Find top producer of this crop
