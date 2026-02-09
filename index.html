@@ -1230,21 +1230,26 @@
                     `;
                 }).join('');
 
+                // Calculate Top Surplus and Deficit for Dynamic Recs
+                const sortedAll = [...raw.gap].sort((a, b) => b.Balance_Tons - a.Balance_Tons);
+                const topSurplus = sortedAll[0];
+                const topDeficit = sortedAll[sortedAll.length - 1];
+
                 // Populate Dynamic Recommendations
                 const recList = document.getElementById('pr-recs');
                 if (currentRegion === 'all') {
                     recList.innerHTML = `
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">STOCK UP:</strong> Secure buffer stocks in Rayalaseema districts by Month 3.</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">TRANSPORT:</strong> Bridge 12% gap in East Godavari using surpluses from central hubs.</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">MONITOR:</strong> Watch Month 5 supply drops due to seasonal shifts.</li>
+                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Redistribution Plan:</strong> Priority transfer from <span class="bg-emerald-100 px-1 rounded font-bold">${topSurplus.District}</span> to <span class="bg-rose-100 px-1 rounded font-bold">${topDeficit.District}</span> to bridge ${formatTons(Math.abs(topDeficit.Balance_Tons))} gap.</li>
+                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Resource Hubs:</strong> Leverage <span class="bg-blue-50 px-1 rounded font-bold">${sortedAll[1].District}</span> as a secondary storage cluster for western regions.</li>
+                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Administrative:</strong> Release 15% strategic buffer stocks in Month 2 to mitigate predicted statewide deficit of ${formatTons(Math.abs(raw.gap.reduce((a, b) => a + b.Balance_Tons, 0)))}.</li>
                     `;
                 } else {
                     const d = raw.gap.find(x => x.District === currentRegion);
                     const isDeficit = d.Balance_Tons < 0;
                     recList.innerHTML = `
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">${isDeficit ? 'EMERGENCY' : 'STORAGE'}:</strong> ${isDeficit ? 'Prioritize incoming shipments' : 'Max out silo capacity'} for <strong>${currentRegion}</strong>.</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">LOGISTICS:</strong> Prepare local depots for a predicted ${Math.floor(Math.random() * 15) + 5}% demand spike.</li>
-                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900">FORECAST:</strong> Maintain current reserves to handle ${currentRegion}-specific seasonal drop in Month 4.</li>
+                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">${isDeficit ? 'Inbound Logistics' : 'Outbound Logistics'}:</strong> ${isDeficit ? `Coordinate supply chains from **${topSurplus.District}** hub.` : `Designate as a Supply Hub to support **${topDeficit.District}** deficit.`}</li>
+                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Infrastructure:</strong> ${isDeficit ? 'Establish 4 regional distribution centers' : 'Maximize silo storage capacity'} for <strong>${currentRegion}</strong> situational load.</li>
+                        <li class="flex items-start"><span class="mr-2 text-emerald-500">▶</span> <strong class="text-emerald-900 uppercase">Monitoring:</strong> Maintain a 3-month rolling reserve to handle predicted seasonal dips.</li>
                     `;
                 }
             });
