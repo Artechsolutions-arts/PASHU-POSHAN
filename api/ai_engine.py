@@ -292,7 +292,7 @@ def get_local_response(prompt, df, custom_context=None):
     # Intent moved to priority position
 
     # 9. INTENT: WHAT-IF SCENARIO ANALYSIS (STRESS TEST)
-    if any(x in clean_q for x in ["RAIN", "DROUGHT", "SCENARIO", "CLIMATE", "REDUCE"]):
+    if any(x in clean_q for x in ["RAIN", "DROUGHT", "SCENARIO", "CLIMATE", "REDUCE", "WHAT IF", "ACTION"]):
         import re
         # Extract percentage if mentioned (e.g., "20%")
         pct_match = re.search(r'(\d+)\s*%', clean_q)
