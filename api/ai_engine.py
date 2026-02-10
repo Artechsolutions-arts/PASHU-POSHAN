@@ -345,7 +345,7 @@ def get_local_response(prompt, df, custom_context=None):
             d_norm = d.upper().replace(" ", "")
             if d_norm in q_norm or q_norm in d_norm: return d
         # Common alias check
-        aliases = {"KONASEEMA": "DR B.R. AMBEDKAR KONASEEMA", "ASR": "ALLURI SITARAMA RAJU", "YSR": "KADAPA", "VIZAG": "VISAKHAPATNAM"}
+        aliases = {"KONASEEMA": "DR B.R. AMBEDKAR KONASEEMA", "ASR": "ALLURI SITARAMA RAJU", "YSR": "KADAPA", "VIZAG": "VISAKHAPATNAM", "PRAKASHAM": "PRAKASAM"}
         for k, v in aliases.items():
             if k in q_norm: return v
         return None
