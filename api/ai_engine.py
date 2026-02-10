@@ -110,6 +110,25 @@ def get_local_response(prompt, df, custom_context=None):
                 target_name = d
                 break
         
+        # If they ask "WHICH" districts, find the ones failing in next 3 months
+        if target_name is None and any(x in clean_q for x in ["WHICH", "LIST", "WHAT", "DISTRICT", "ARE"]):
+            risky_districts = []
+            for _, row in df.iterrows():
+                d_stock = row['Total_Fodder_Tons']
+                d_burn = row['Total_Demand_Tons'] / 12
+                # Check 3 months (quarter)
+                for m in range(1, 4):
+                    d_stock -= d_burn
+                    if d_stock < 0:
+                        risky_districts.append(f"{row['District']} (Month {m})")
+                        break
+            
+            if risky_districts:
+                r_list = "\n".join([f"{i+1}. **{d}**" for i, d in enumerate(risky_districts)])
+                return header + "🔮 FORECAST: UPCOMING DISTRICT SHORTAGES\n\n" + \
+                    "The following districts are predicted to hit a resource gap within the **next quarter**:\n\n" + r_list + \
+                    "\n\n**PROACTIVE ADVICE:** Initiate inter-district transfers from West Godavari hubs immediately to these zones." + footer
+        
         target_df = df if target_name is None else df[df['District'] == target_name]
         total_s = target_df['Total_Fodder_Tons'].sum()
         total_d = target_df['Total_Demand_Tons'].sum()
