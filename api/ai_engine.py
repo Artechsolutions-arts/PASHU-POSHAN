@@ -76,6 +76,8 @@ def get_local_response(prompt, df, custom_context=None):
         supply_df, demand_df = None, None
 
     # 2. ENTITY LIBRARIES
+    all_districts = df['District'].unique() if df is not None else []
+    
     CROP_MAP = {
         "PADDY": "Paddy", "RICE": "Paddy", "STRAW": "Paddy",
         "MAIZE": "Maize", "CORN": "Maize",
@@ -99,10 +101,37 @@ def get_local_response(prompt, df, custom_context=None):
             return f"{val:,.0f} Tons"
         except: return str(n)
 
+    # 3. INTENT: PREDICTION & FORECASTING
+    if df is not None and any(x in clean_q for x in ["PREDICT", "FUTURE", "FORECAST", "NEXT", "OUTLOOK", "QUARTER"]):
+        target_name = None
+        # Check if they asked about a specific district
+        for d in all_districts:
+            if d.upper().replace(" ", "") in clean_q.replace(" ", ""):
+                target_name = d
+                break
+        
+        target_df = df if target_name is None else df[df['District'] == target_name]
+        total_s = target_df['Total_Fodder_Tons'].sum()
+        total_d = target_df['Total_Demand_Tons'].sum()
+        monthly_burn = total_d / 12
+        
+        p_title = f"🔮 FUTURE FORECAST: {target_name.upper() if target_name else 'STATEWIDE'}\n\n"
+        p_content = f"Analyzing consumption trends... Monthly burn rate: ~{fmt(monthly_burn)}\n\n"
+        p_content += "| Period | Est. Stock | Status |\n|---|---|---|\n"
+        
+        current_stock = total_s
+        for i in range(1, 7):
+            current_stock -= monthly_burn
+            status = "🟢 SAFE" if current_stock > 0 else "🔴 SHORTAGE"
+            p_content += f"| Month {i} | {fmt(max(0, current_stock))} | {status} |\n"
+        
+        p_content += "\n**GOVERNANCE ADVICE:** " + ("Resource redistribution is required within 90 days." if current_stock < 0 else "Maintain current storage levels.")
+        return header + p_title + p_content + footer
+
     # 4. INTENT: CROP ANALYSIS
     if supply_df is not None:
-        # Check for general crop shortage/lowest production query
-        if any(x in clean_q for x in ["SHORTAGE", "LOWEST", "LEAST"]) and ("CROP" in clean_q or "FODDER" in clean_q):
+        # Check for general crop shortage/lowest production query (exclude temporal queries)
+        if any(x in clean_q for x in ["SHORTAGE", "LOWEST", "LEAST"]) and ("CROP" in clean_q or "FODDER" in clean_q) and not any(x in clean_q for x in ["NEXT", "QUARTER", "FUTURE", "FORECAST"]):
             # Calculate totals and filter out 0-value items (placeholders)
             crop_totals = {col: supply_df[col].sum() for col in set(CROP_MAP.values())}
             active_crops = {k: v for k, v in crop_totals.items() if v > 0}
@@ -141,7 +170,6 @@ def get_local_response(prompt, df, custom_context=None):
 
     # 6. INTENT: COMPARISON ("Compare X and Y")
     districts_in_query = []
-    all_districts = df['District'].unique()
     for d in all_districts:
         if d.upper().replace(" ", "") in clean_q.replace(" ", ""):
             districts_in_query.append(d)
@@ -261,32 +289,7 @@ def get_local_response(prompt, df, custom_context=None):
                 "The following areas report a negative fodder balance:\n\n" + d_list + \
                 "\n\n**Recommendation:** Prioritize logistical movement to top 3 zones immediately." + footer
 
-    # 9. INTENT: PREDICTION & FORECASTING
-    if df is not None and any(x in clean_q for x in ["PREDICT", "FUTURE", "FORECAST", "NEXT", "OUTLOOK", "QUARTER"]):
-        target_name = None
-        # Check if they asked about a specific district
-        for d in all_districts:
-            if d.upper().replace(" ", "") in clean_q.replace(" ", ""):
-                target_name = d
-                break
-        
-        target_df = df if target_name is None else df[df['District'] == target_name]
-        total_s = target_df['Total_Fodder_Tons'].sum()
-        total_d = target_df['Total_Demand_Tons'].sum()
-        monthly_burn = total_d / 12
-        
-        p_title = f"🔮 FUTURE FORECAST: {target_name.upper() if target_name else 'STATEWIDE'}\n\n"
-        p_content = f"Analyzing consumption trends... Monthly burn rate: ~{fmt(monthly_burn)}\n\n"
-        p_content += "| Period | Est. Stock | Status |\n|---|---|---|\n"
-        
-        current_stock = total_s
-        for i in range(1, 7):
-            current_stock -= monthly_burn
-            status = "🟢 SAFE" if current_stock > 0 else "🔴 SHORTAGE"
-            p_content += f"| Month {i} | {fmt(max(0, current_stock))} | {status} |\n"
-        
-        p_content += "\n**GOVERNANCE ADVICE:** " + ("Resource redistribution is required within 90 days." if current_stock < 0 else "Maintain current storage levels.")
-        return header + p_title + p_content + footer
+    # Intent moved to priority position
 
     # 9. INTENT: WHAT-IF SCENARIO ANALYSIS (STRESS TEST)
     if any(x in clean_q for x in ["RAIN", "DROUGHT", "SCENARIO", "CLIMATE", "REDUCE"]):
